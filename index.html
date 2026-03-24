@@ -39,6 +39,7 @@
                         'slide-up': 'slideUp 0.5s ease-out forwards',
                         'glow': 'glow 2s ease-in-out infinite alternate',
                         'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
                     },
                     keyframes: {
                         float: {
@@ -47,6 +48,10 @@
                         },
                         slideUp: {
                             '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        fadeInUp: {
+                            '0%': { transform: 'translateY(30px)', opacity: '0' },
                             '100%': { transform: 'translateY(0)', opacity: '1' },
                         },
                         glow: {
@@ -152,7 +157,7 @@
         .staff-card-inner {
             background: linear-gradient(145deg, #1e293b, #0f172a);
             border: 1px solid rgba(59, 130, 246, 0.2);
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
@@ -172,8 +177,11 @@
         }
         .staff-card-inner:hover {
             border-color: rgba(59, 130, 246, 0.6);
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 10px 30px rgba(0, 0, 0, 0.3);
-            transform: translateY(-5px);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.4), 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: translateY(-8px);
+        }
+        .staff-card-inner.loading {
+            animation: pulse 1.5s ease-in-out infinite;
         }
         .staff-avatar {
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
@@ -187,7 +195,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.15), transparent);
             transform: rotate(45deg);
             animation: shimmer 3s infinite;
         }
@@ -327,6 +335,23 @@
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(239, 68, 68, 0.1));
             border: 1px solid rgba(59, 130, 246, 0.3);
         }
+
+        /* Staff loading animation */
+        .staff-card-wrapper {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .staff-card-wrapper.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .staff-card-wrapper.commander { transition-delay: 0ms; }
+        .staff-card-wrapper.deputy-1 { transition-delay: 150ms; }
+        .staff-card-wrapper.deputy-2 { transition-delay: 300ms; }
+        .staff-card-wrapper.curator-1 { transition-delay: 450ms; }
+        .staff-card-wrapper.curator-2 { transition-delay: 600ms; }
+        .staff-card-wrapper.curator-3 { transition-delay: 750ms; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen selection:bg-police-accent selection:text-white">
@@ -491,7 +516,6 @@
                 </p>
             </div>
             
-            <!-- Schedule Stats -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <div class="glass-panel p-4 rounded-xl text-center">
                     <div class="text-3xl font-bold text-green-400" id="freeSlotsCount">0</div>
@@ -508,7 +532,6 @@
             </div>
             
             <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                <!-- Always shows 3 slots even if table is empty -->
             </div>
 
             <div class="glass-panel p-8 md:p-10 rounded-3xl shadow-2xl max-w-4xl mx-auto border-t border-police-accent/30">
@@ -517,7 +540,7 @@
                 </h3>
                 <p class="text-gray-400 text-sm mb-8">
                     <i class="fas fa-info-circle mr-1"></i>
-                    Введите ваш игровой ник в формате <code class="bg-police-900 px-2 py-1 rounded">Ivan_Ivanov</code> (латиница, буквы и подчёркивание)
+                    Введите ваш игровой ник в формате <code class="bg-police-900 px-2 py-1 rounded">Ivan_Ivanov</code>
                 </p>
                 <form id="bookingForm" class="space-y-6" novalidate>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -529,23 +552,13 @@
                                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                     <i class="fas fa-user text-gray-500 group-focus-within:text-police-accent transition"></i>
                                 </div>
-                                <input 
-                                    type="text" 
-                                    id="bookNick" 
-                                    placeholder="Ivan_Ivanov" 
-                                    class="w-full bg-police-900/50 border border-police-700 rounded-xl pl-11 pr-12 py-4 text-white focus:outline-none focus:border-police-accent focus:ring-2 focus:ring-police-accent/20 transition shadow-inner" 
-                                    required 
-                                    pattern="^[A-Za-z]+_[A-Za-z]+$"
-                                    autocomplete="off"
-                                >
-                                <div class="validation-icon hidden" id="nickValidationIcon">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
+                                <input type="text" id="bookNick" placeholder="Ivan_Ivanov" class="w-full bg-police-900/50 border border-police-700 rounded-xl pl-11 pr-12 py-4 text-white focus:outline-none focus:border-police-accent focus:ring-2 focus:ring-police-accent/20 transition shadow-inner" required pattern="^[A-Za-z]+_[A-Za-z]+$" autocomplete="off">
+                                <div class="validation-icon hidden" id="nickValidationIcon"><i class="fas fa-check-circle"></i></div>
                             </div>
                             <div class="validation-message hidden" id="nickValidationMessage"></div>
                             <div class="text-xs text-gray-500 mt-2 flex items-center gap-2">
                                 <i class="fas fa-info-circle"></i>
-                                <span>Только латиница, обязательно подчёркивание между именем и фамилией</span>
+                                <span>Только латиница, обязательно подчёркивание</span>
                             </div>
                         </div>
                         <div class="group">
@@ -565,10 +578,6 @@
                                 <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                                     <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
                                 </div>
-                            </div>
-                            <div class="text-xs text-gray-500 mt-2 flex items-center gap-2">
-                                <i class="fas fa-info-circle"></i>
-                                <span>Доступны только свободные слоты</span>
                             </div>
                         </div>
                     </div>
@@ -591,7 +600,6 @@
                 </form>
             </div>
 
-            <!-- Nickname Format Guide -->
             <div class="mt-8 glass-panel p-6 rounded-2xl max-w-4xl mx-auto">
                 <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
                     <i class="fas fa-question-circle text-police-accent"></i>
@@ -599,25 +607,19 @@
                 </h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-green-900/20 border border-green-700/50 p-4 rounded-xl">
-                        <div class="text-green-400 font-bold mb-2">
-                            <i class="fas fa-check-circle mr-2"></i>Правильно:
-                        </div>
+                        <div class="text-green-400 font-bold mb-2"><i class="fas fa-check-circle mr-2"></i>Правильно:</div>
                         <ul class="text-sm text-gray-300 space-y-1">
                             <li>• Ivan_Ivanov</li>
                             <li>• Petr_Petrov</li>
                             <li>• Yaroslav_Volkov</li>
-                            <li>• Alex_Smirnov</li>
                         </ul>
                     </div>
                     <div class="bg-red-900/20 border border-red-700/50 p-4 rounded-xl">
-                        <div class="text-red-400 font-bold mb-2">
-                            <i class="fas fa-times-circle mr-2"></i>Неправильно:
-                        </div>
+                        <div class="text-red-400 font-bold mb-2"><i class="fas fa-times-circle mr-2"></i>Неправильно:</div>
                         <ul class="text-sm text-gray-300 space-y-1">
-                            <li>• ivan_ivanov (строчные буквы)</li>
-                            <li>• IvanIvanov (без подчёркивания)</li>
+                            <li>• ivan_ivanov (строчные)</li>
+                            <li>• IvanIvanov (без _)</li>
                             <li>• Иван_Иванов (кириллица)</li>
-                            <li>• Ivan_ (нет фамилии)</li>
                         </ul>
                     </div>
                 </div>
@@ -645,24 +647,18 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-bold text-gray-400 mb-2">Тема</label>
-                                <select id="repTopic" class="w-full bg-police-900/50 border border-police-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition">
-                                </select>
+                                <select id="repTopic" class="w-full bg-police-900/50 border border-police-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition"></select>
                             </div>
                         </div>
-
                         <div>
                             <label class="block text-sm font-bold text-gray-400 mb-2">Инструктор (Кто провел)</label>
                             <input type="text" id="repInstructor" placeholder="Фамилия" class="w-full bg-police-900/50 border border-police-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition" required>
                         </div>
-
                         <div>
-                            <label class="block text-sm font-bold text-gray-400 mb-2">
-                                <i class="fas fa-users mr-1"></i>Кому проводили (Ники через запятую)
-                            </label>
+                            <label class="block text-sm font-bold text-gray-400 mb-2"><i class="fas fa-users mr-1"></i>Кому проводили (Ники через запятую)</label>
                             <textarea id="repStudents" placeholder="Ivan_Ivanov, Petr_Petrov" class="w-full bg-police-900/50 border border-police-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition h-24 resize-none" required></textarea>
-                            <p class="text-xs text-gray-500 mt-2 flex items-center gap-1"><i class="fas fa-info-circle"></i> Разделяйте ники запятой для корректного внесения.</p>
+                            <p class="text-xs text-gray-500 mt-2 flex items-center gap-1"><i class="fas fa-info-circle"></i> Разделяйте ники запятой</p>
                         </div>
-
                         <div id="examResultBlock" class="hidden bg-police-900/50 p-5 rounded-xl border border-police-700">
                             <label class="block text-sm font-bold text-gray-400 mb-3">Результат экзамена</label>
                             <div class="flex gap-6">
@@ -684,31 +680,17 @@
                                 </label>
                             </div>
                         </div>
-
-                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-green-500/20 transform active:scale-[0.98]">
-                            Отправить отчет
-                        </button>
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-green-500/20 transform active:scale-[0.98]">Отправить отчет</button>
                         <div id="reportMessage" class="text-center text-sm font-medium min-h-[24px]"></div>
                     </form>
                 </div>
-
                 <div class="space-y-6">
-                    <!-- Topics List Only -->
                     <div class="glass-panel p-6 rounded-2xl shadow-xl border-t border-purple-500/30">
                         <h3 class="text-lg font-bold text-white mb-3"><i class="fas fa-list mr-2 text-police-accent"></i>Список тем</h3>
                         <div class="text-xs text-gray-400 space-y-3 max-h-96 overflow-y-auto pr-2">
-                            <div>
-                                <span class="font-bold text-police-accent block mb-1">Тренировки:</span>
-                                <span class="opacity-70">Оцепление, Задержание, Строевая, Физподготовка, ДТП, Первая помощь.</span>
-                            </div>
-                            <div>
-                                <span class="font-bold text-police-accent block mb-1">Лекции:</span>
-                                <span class="opacity-70">УК, КоАП, ФЗ о Полиции, Конституция, ФЗ об Оружии, ПДД, Субординация, Рация, SOS и др.</span>
-                            </div>
-                            <div>
-                                <span class="font-bold text-police-accent block mb-1">Начальные (5 шт):</span>
-                                <span class="opacity-70">Законодательство, УК+КоАП, ФЗ Полиция+Задержание, ФЗ Оружие, Основа службы УГИБДД.</span>
-                            </div>
+                            <div><span class="font-bold text-police-accent block mb-1">Тренировки:</span><span class="opacity-70">Оцепление, Задержание, Строевая, Физподготовка, ДТП, Первая помощь.</span></div>
+                            <div><span class="font-bold text-police-accent block mb-1">Лекции:</span><span class="opacity-70">УК, КоАП, ФЗ о Полиции, Конституция, ФЗ об Оружии, ПДД, Субординация, Рация, SOS и др.</span></div>
+                            <div><span class="font-bold text-police-accent block mb-1">Начальные (5 шт):</span><span class="opacity-70">Законодательство, УК+КоАП, ФЗ Полиция+Задержание, ФЗ Оружие, Основа службы УГИБДД.</span></div>
                         </div>
                     </div>
                 </div>
@@ -717,65 +699,54 @@
 
         <!-- STAFF / COMMAND SECTION -->
         <section id="staff" class="hidden-section">
-            <!-- Header -->
             <div class="staff-section-header rounded-3xl p-8 mb-10 text-center relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-police-accent/10 to-transparent pointer-events-none"></div>
                 <div class="relative z-10">
                     <div class="inline-block p-4 bg-police-800/80 rounded-2xl mb-4 shadow-lg">
                         <i class="fas fa-users-cog text-4xl text-police-accent"></i>
                     </div>
-                    <h2 class="text-4xl md:text-5xl font-black text-white mb-3 brand-font">
-                        Командующий состав ЦППС
-                    </h2>
+                    <h2 class="text-4xl md:text-5xl font-black text-white mb-3 brand-font">Командующий состав ЦППС</h2>
                     <div class="h-1 w-32 bg-gradient-to-r from-police-accent via-police-fire to-police-accent mx-auto rounded-full mb-4"></div>
-                    <p class="text-gray-400 text-lg max-w-2xl mx-auto">
-                        Руководство Центра Профессиональной Подготовки Сотрудников УГИБДД
-                    </p>
+                    <p class="text-gray-400 text-lg max-w-2xl mx-auto">Руководство Центра Профессиональной Подготовки Сотрудников УГИБДД</p>
                     <div class="mt-6 flex items-center justify-center gap-4 flex-wrap">
-                        <div class="live-status">
-                            <div class="live-status-dot"></div>
-                            <span>Актуально на сегодня</span>
-                        </div>
+                        <div class="live-status"><div class="live-status-dot"></div><span id="staffStatusText">Загрузка...</span></div>
                         <button onclick="loadStaff()" class="bg-police-accent/20 hover:bg-police-accent/30 border border-police-accent/50 text-police-accent px-4 py-2 rounded-lg transition flex items-center gap-2">
-                            <i class="fas fa-sync-alt"></i>
-                            <span>Обновить</span>
+                            <i class="fas fa-sync-alt"></i><span>Обновить</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Loading State -->
-            <div id="staffLoading" class="text-center py-12">
-                <div class="inline-block p-4 rounded-full bg-police-800 mb-4 animate-pulse">
-                    <i class="fas fa-users text-4xl text-police-accent"></i>
+            <div id="staffLoading" class="text-center py-16">
+                <div class="relative inline-block">
+                    <div class="w-20 h-20 border-4 border-police-700 border-t-police-accent rounded-full animate-spin"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <i class="fas fa-users text-2xl text-police-accent"></i>
+                    </div>
                 </div>
-                <p class="text-gray-400 text-lg">Загрузка данных о командном составе...</p>
+                <p class="text-gray-400 text-lg mt-6 animate-pulse">Загрузка командного состава...</p>
+                <p class="text-gray-500 text-sm mt-2">Получение данных из таблицы</p>
             </div>
 
-            <!-- Error State -->
-            <div id="staffError" class="hidden text-center py-12">
-                <div class="inline-block p-4 rounded-full bg-red-900/30 mb-4">
-                    <i class="fas fa-exclamation-triangle text-4xl text-red-500"></i>
+            <div id="staffError" class="hidden text-center py-16">
+                <div class="inline-block p-6 rounded-full bg-red-900/30 mb-6">
+                    <i class="fas fa-exclamation-triangle text-5xl text-red-500"></i>
                 </div>
-                <p class="text-red-300 text-lg mb-4" id="staffErrorMessage">Ошибка загрузки списка сотрудников</p>
-                <button onclick="loadStaff()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl transition">
-                    <i class="fas fa-redo mr-2"></i>Повторить попытку
+                <p class="text-red-300 text-xl mb-2">Ошибка загрузки</p>
+                <p class="text-red-400/70 text-sm mb-6" id="staffErrorMessage">Не удалось получить данные</p>
+                <button onclick="loadStaff()" class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-xl transition inline-flex items-center gap-2">
+                    <i class="fas fa-redo"></i>Повторить попытку
                 </button>
             </div>
 
-            <!-- Staff Grid -->
-            <div id="staffContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
-            </div>
+            <div id="staffContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
 
-            <!-- Info Box -->
             <div class="mt-10 glass-panel p-6 rounded-2xl max-w-4xl mx-auto">
                 <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
                     <i class="fas fa-info-circle text-police-accent"></i>
                     Информация для командного состава
                 </h4>
-                <p class="text-gray-400 text-sm mb-4">
-                    Для добавления или изменения информации о сотруднике, внесите данные в таблицу ЦППС (лист Staff).
-                </p>
+                <p class="text-gray-400 text-sm mb-4">Для добавления или изменения информации о сотруднике, внесите данные в таблицу ЦППС (лист Staff).</p>
                 <div class="bg-police-900/50 p-4 rounded-xl border border-police-700">
                     <p class="text-xs text-gray-500">
                         <i class="fas fa-link mr-2"></i>
@@ -791,33 +762,28 @@
             <div class="max-w-4xl mx-auto space-y-8">
                 <div class="glass-panel p-8 md:p-10 rounded-3xl shadow-2xl border border-police-700">
                     <h3 class="text-3xl font-bold text-police-accent mb-6">Отчетная ведомость</h3>
-                    <p class="text-gray-300 mb-8 text-lg leading-relaxed">
-                        Ежедневно необходимо составлять отчетную ведомость на официальном форуме Amazing Online. 
-                        Скриншоты работы загружаются на фотохостинг, ссылка вставляется в форму.
-                    </p>
+                    <p class="text-gray-300 mb-8 text-lg leading-relaxed">Ежедневно необходимо составлять отчетную ведомость на официальном форуме Amazing Online.</p>
                     <a href="https://forum.amazing-online.com/threads/otchetnaja-vedomost-o-provedenii-uchebnyx-zanjatij-i-professionalnoj-dejatelnosti-ugibdd.1096076/page-8#post-8832009" target="_blank" class="inline-flex items-center gap-3 bg-police-accent hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg shadow-blue-500/30 transform hover:-translate-y-1">
                         <i class="fas fa-external-link-alt"></i> Перейти к форме на форуме
                     </a>
-                    
                     <div class="mt-10 p-8 bg-black/40 rounded-2xl border border-gray-700 font-mono text-sm text-gray-400 space-y-4 shadow-inner">
-                        <div class="flex flex-col md:flex-row md:items-center border-b border-gray-700 pb-3"><span class="w-full md:w-1/3 text-gray-500 font-bold">Имя и фамилия (лат.):</span> <span class="border-b border-gray-600 flex-grow ml-2">_______________</span></div>
-                        <div class="flex flex-col md:flex-row md:items-center border-b border-gray-700 pb-3"><span class="w-full md:w-1/3 text-gray-500 font-bold">Должность и звание:</span> <span class="border-b border-gray-600 flex-grow ml-2">_______________</span></div>
-                        <div class="flex flex-col md:flex-row md:items-center border-b border-gray-700 pb-3"><span class="w-full md:w-1/3 text-gray-500 font-bold">Тема занятия:</span> <span class="border-b border-gray-600 flex-grow ml-2">_______________</span></div>
-                        <div class="flex flex-col md:flex-row md:items-center border-b border-gray-700 pb-3"><span class="w-full md:w-1/3 text-gray-500 font-bold">Дата и время:</span> <span class="border-b border-gray-600 flex-grow ml-2">_______________</span></div>
-                        <div class="flex flex-col md:flex-row md:items-center"><span class="w-full md:w-1/3 text-gray-500 font-bold">Доказательства:</span> <span class="text-blue-400 underline flex-grow ml-2 cursor-pointer hover:text-blue-300">[Ссылка на фотохостинг]</span></div>
+                        <div class="flex flex-col md:flex-row md:items-center border-b border-gray-700 pb-3"><span class="w-full md:w-1/3 text-gray-500 font-bold">Имя и фамилия (лат.):</span><span class="border-b border-gray-600 flex-grow ml-2">_______________</span></div>
+                        <div class="flex flex-col md:flex-row md:items-center border-b border-gray-700 pb-3"><span class="w-full md:w-1/3 text-gray-500 font-bold">Должность и звание:</span><span class="border-b border-gray-600 flex-grow ml-2">_______________</span></div>
+                        <div class="flex flex-col md:flex-row md:items-center border-b border-gray-700 pb-3"><span class="w-full md:w-1/3 text-gray-500 font-bold">Тема занятия:</span><span class="border-b border-gray-600 flex-grow ml-2">_______________</span></div>
+                        <div class="flex flex-col md:flex-row md:items-center border-b border-gray-700 pb-3"><span class="w-full md:w-1/3 text-gray-500 font-bold">Дата и время:</span><span class="border-b border-gray-600 flex-grow ml-2">_______________</span></div>
+                        <div class="flex flex-col md:flex-row md:items-center"><span class="w-full md:w-1/3 text-gray-500 font-bold">Доказательства:</span><span class="text-blue-400 underline flex-grow ml-2">[Ссылка]</span></div>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="glass-panel p-6 rounded-2xl border border-police-700 hover:border-police-accent transition duration-300 group">
                         <h3 class="text-xl font-bold text-white mb-3 group-hover:text-police-accent transition">Методичка</h3>
-                        <p class="text-gray-400 text-sm mb-5">Полный свод правил, лекций и требований для сдачи экзаменов.</p>
-                        <a href="https://sites.google.com/view/metodiccppsfire" target="_blank" class="text-police-accent hover:text-white font-medium text-sm flex items-center gap-2 group-hover:gap-3 transition-all">Открыть методичку <i class="fas fa-arrow-right"></i></a>
+                        <p class="text-gray-400 text-sm mb-5">Полный свод правил и лекций.</p>
+                        <a href="https://sites.google.com/view/metodiccppsfire" target="_blank" class="text-police-accent hover:text-white font-medium text-sm flex items-center gap-2 group-hover:gap-3 transition-all">Открыть <i class="fas fa-arrow-right"></i></a>
                     </div>
                     <div class="glass-panel p-6 rounded-2xl border border-police-700 hover:border-police-accent transition duration-300 group">
                         <h3 class="text-xl font-bold text-white mb-3 group-hover:text-police-accent transition">Чат Отчетности</h3>
-                        <p class="text-gray-400 text-sm mb-5">Обязательный чат для отписки хэштегов после проведения занятий.</p>
-                        <a href="https://vk.me/join/pcYgyO47p58Czw2Bzmmt2G9MSjPOdnn/ZWo=" target="_blank" class="text-police-accent hover:text-white font-medium text-sm flex items-center gap-2 group-hover:gap-3 transition-all">Вступить в чат <i class="fas fa-arrow-right"></i></a>
+                        <p class="text-gray-400 text-sm mb-5">Обязательный чат для хэштегов.</p>
+                        <a href="https://vk.me/join/pcYgyO47p58Czw2Bzmmt2G9MSjPOdnn/ZWo=" target="_blank" class="text-police-accent hover:text-white font-medium text-sm flex items-center gap-2 group-hover:gap-3 transition-all">Вступить <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -829,29 +795,20 @@
     <footer class="bg-police-900 border-t border-police-800 py-10 mt-auto relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-police-accent to-transparent opacity-50"></div>
         <div class="container mx-auto px-4 text-center relative z-10">
-            <h2 class="text-3xl md:text-4xl font-black text-white mb-4 tracking-widest brand-font">
-                AMAZING <span class="amazing-fire-glow">FIRE</span>
-            </h2>
+            <h2 class="text-3xl md:text-4xl font-black text-white mb-4 tracking-widest brand-font">AMAZING <span class="amazing-fire-glow">FIRE</span></h2>
             <p class="text-gray-500 text-xs md:text-sm mb-8 uppercase tracking-widest font-semibold">Официальный ресурс ЦППС УГИБДД</p>
-            
             <div class="border-t border-police-800 pt-8">
-                <p class="text-xs text-gray-600">
-                    &copy; 2026 ЦППС УГИБДД. Все права защищены.<br>
-                    <span class="opacity-30 hover:opacity-100 transition duration-500 cursor-default mt-2 inline-block">Site developed by Volkov</span>
-                </p>
+                <p class="text-xs text-gray-600">&copy; 2026 ЦППС УГИБДД. Все права защищены.<br><span class="opacity-30 hover:opacity-100 transition duration-500 cursor-default mt-2 inline-block">Site developed by Volkov</span></p>
             </div>
         </div>
     </footer>
 
-    <!-- Toast Notification -->
     <div id="toast" class="toast">Message here</div>
 
     <script>
         // КОНФИГУРАЦИЯ
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQIJiHjmQCNV6gMUcioIa9V8HBQpgak90vaIhhHs6HJr3ozHwX54uQsyKx_2wyOxtS7g/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxQIJiHjmQCNV6gMUcioIa9V8HBQpgak90vaIhhHs6HJr3ozHwX54uQsyKx_2wyOxtS7g/exec';
         const SPREADSHEET_ID = '14woBSDMK9W6QWmhn7kfr_BBRtFN5la9yVVv-XkPZXJM';
-        
-        const NICK_PATTERN_STRICT = /^[A-Za-z]+_[A-Za-z]+$/;
         
         const topics = {
             training: ["Оцепление", "Задержание", "Строевая подготовка", "Физическая подготовка", "Оформление ДТП", "Первая доврачебная помощь"],
@@ -860,7 +817,6 @@
         };
 
         let scheduleData = [];
-        let lastFetchTime = null;
         let autoRefreshInterval = null;
 
         function toggleMobileMenu() {
@@ -872,12 +828,11 @@
                 sec.classList.remove('active-section');
                 sec.classList.add('hidden-section');
             });
-            const target = document.getElementById(tabId);
-            target.classList.remove('hidden-section');
-            target.classList.add('active-section');
+            document.getElementById(tabId).classList.remove('hidden-section');
+            document.getElementById(tabId).classList.add('active-section');
 
-            document.querySelectorAll('.nav-item').forEach((btn, idx) => {
-                btn.classList.remove('active', 'text-white', 'bg-police-700/50', 'shadow-sm');
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('active', 'text-white', 'bg-police-700/50');
                 btn.classList.add('text-gray-300');
             });
             
@@ -885,15 +840,11 @@
             const activeBtn = document.querySelectorAll('.nav-item')[navMap[tabId]];
             if(activeBtn) {
                 activeBtn.classList.remove('text-gray-300');
-                activeBtn.classList.add('active', 'text-white', 'bg-police-700/50', 'shadow-sm');
+                activeBtn.classList.add('active', 'text-white', 'bg-police-700/50');
             }
             
-            if(tabId === 'schedule') {
-                loadSchedule();
-                startAutoRefresh();
-            } else {
-                stopAutoRefresh();
-            }
+            if(tabId === 'schedule') { loadSchedule(); startAutoRefresh(); }
+            else { stopAutoRefresh(); }
             if(tabId === 'staff') loadStaff();
         }
 
@@ -901,15 +852,13 @@
             const type = document.getElementById('repType').value;
             const topicSelect = document.getElementById('repTopic');
             const examBlock = document.getElementById('examResultBlock');
-            
             topicSelect.innerHTML = '';
-            
             if (topics[type]) {
                 topics[type].forEach(t => topicSelect.add(new Option(t, t)));
                 examBlock.classList.add('hidden');
             } else {
-                if(type === 'basic_exam') topicSelect.add(new Option("Базовый экзамен", "Базовый экзамен"));
-                if(type === 'inter_exam') topicSelect.add(new Option("Промежуточная аттестация", "Промежуточная аттестация"));
+                topicSelect.add(new Option("Базовый экзамен", "Базовый экзамен"));
+                topicSelect.add(new Option("Промежуточная аттестация", "Промежуточная аттестация"));
                 examBlock.classList.remove('hidden');
             }
         }
@@ -918,19 +867,16 @@
             const toast = document.getElementById("toast");
             toast.className = "toast show " + type;
             toast.innerText = message;
-            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+            setTimeout(() => toast.className = toast.className.replace("show", ""), 3000);
         }
 
-        // ==================== VALIDATION ====================
-        
         function validateNickname(nick) {
             if (!nick || nick.trim() === '') return { valid: false, message: 'Введите никнейм' };
             if (/[а-яА-ЯЁё]/.test(nick)) return { valid: false, message: 'Ник должен быть на латинице' };
-            if (!nick.includes('_')) return { valid: false, message: 'Ник должен содержать подчёркивание (Ivan_Ivanov)' };
+            if (!nick.includes('_')) return { valid: false, message: 'Ник должен содержать подчёркивание' };
             const parts = nick.split('_');
-            if (parts.length !== 2) return { valid: false, message: 'Формат: Имя_Фамилия (одно подчёркивание)' };
-            if (parts[0].length < 2 || parts[1].length < 2) return { valid: false, message: 'Имя и фамилия должны быть не менее 2 букв' };
-            if (!/^[A-Za-z]+$/.test(parts[0]) || !/^[A-Za-z]+$/.test(parts[1])) return { valid: false, message: 'Ник должен содержать только буквы' };
+            if (parts.length !== 2) return { valid: false, message: 'Формат: Имя_Фамилия' };
+            if (parts[0].length < 2 || parts[1].length < 2) return { valid: false, message: 'Минимум 2 буквы' };
             return { valid: true, message: 'Ник корректен' };
         }
 
@@ -947,7 +893,6 @@
                 input.classList.remove('input-invalid');
                 input.classList.add('input-valid');
                 icon.classList.add('valid');
-                icon.innerHTML = '<i class="fas fa-check-circle"></i>';
                 messageEl.classList.add('valid');
                 messageEl.textContent = message;
                 submitBtn.disabled = false;
@@ -955,7 +900,6 @@
                 input.classList.remove('input-valid');
                 input.classList.add('input-invalid');
                 icon.classList.add('invalid');
-                icon.innerHTML = '<i class="fas fa-times-circle"></i>';
                 messageEl.classList.add('invalid');
                 messageEl.textContent = message;
                 submitBtn.disabled = true;
@@ -963,22 +907,14 @@
         }
 
         function clearValidationUI() {
-            const input = document.getElementById('bookNick');
-            const icon = document.getElementById('nickValidationIcon');
-            const messageEl = document.getElementById('nickValidationMessage');
-            
-            input.classList.remove('input-valid', 'input-invalid');
-            icon.classList.add('hidden');
-            messageEl.classList.add('hidden');
+            document.getElementById('bookNick').classList.remove('input-valid', 'input-invalid');
+            document.getElementById('nickValidationIcon').classList.add('hidden');
+            document.getElementById('nickValidationMessage').classList.add('hidden');
         }
 
         document.getElementById('bookNick').addEventListener('input', function(e) {
             const value = e.target.value.trim();
-            if (value === '') {
-                clearValidationUI();
-                document.getElementById('submitBtn').disabled = true;
-                return;
-            }
+            if (value === '') { clearValidationUI(); document.getElementById('submitBtn').disabled = true; return; }
             const result = validateNickname(value);
             updateValidationUI(result.valid, result.message);
         });
@@ -988,14 +924,8 @@
             if (value === '') { clearValidationUI(); return; }
             const result = validateNickname(value);
             updateValidationUI(result.valid, result.message);
-            if (!result.valid) {
-                e.target.classList.add('animate-shake');
-                setTimeout(() => e.target.classList.remove('animate-shake'), 500);
-            }
         });
 
-        // ==================== SCHEDULE ====================
-        
         function showRefreshIndicator(show) {
             const indicator = document.getElementById('refreshIndicator');
             if (show) indicator.classList.add('show');
@@ -1014,138 +944,75 @@
         }
 
         function updateLastUpdateTime() {
-            const now = new Date();
-            document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            lastFetchTime = now;
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         }
 
         function updateScheduleStats(data) {
-            const freeCount = data.filter(s => s.status === 'free').length;
-            const bookedCount = data.filter(s => s.status === 'booked').length;
-            
-            document.getElementById('freeSlotsCount').textContent = freeCount;
-            document.getElementById('bookedSlotsCount').textContent = bookedCount;
+            document.getElementById('freeSlotsCount').textContent = data.filter(s => s.status === 'free').length;
+            document.getElementById('bookedSlotsCount').textContent = data.filter(s => s.status === 'booked').length;
             document.getElementById('totalSlotsCount').textContent = data.length;
             
             const select = document.getElementById('bookTime');
             const currentValue = select.value;
             select.innerHTML = '<option value="">Выберите время...</option>';
-            
             data.forEach(slot => {
                 const option = document.createElement('option');
                 option.value = slot.time;
-                if (slot.status === 'free') {
-                    option.textContent = `${slot.time} - Свободно`;
-                    option.disabled = false;
-                } else {
-                    option.textContent = `${slot.time} - Занято (${slot.user})`;
-                    option.disabled = true;
-                }
+                option.textContent = slot.status === 'free' ? `${slot.time} - Свободно` : `${slot.time} - Занято (${slot.user})`;
+                option.disabled = slot.status !== 'free';
                 select.appendChild(option);
             });
-            
-            if (currentValue && data.find(s => s.time === currentValue && s.status === 'free')) {
-                select.value = currentValue;
-            }
+            if (currentValue && data.find(s => s.time === currentValue && s.status === 'free')) select.value = currentValue;
         }
 
-        // Always show 3 slots even if table is empty
         function renderSchedule(data) {
             const container = document.getElementById('scheduleGrid');
             container.innerHTML = '';
-            
-            const timeSlots = ['10:00', '14:00', '18:00'];
-            
-            timeSlots.forEach((time, index) => {
-                // Find slot in data or create default free slot
+            ['10:00', '14:00', '18:00'].forEach((time, index) => {
                 const slot = data.find(s => s.time === time) || { time, status: 'free', user: '', desc: '' };
                 const isFree = slot.status === 'free';
-                
                 const card = document.createElement('div');
                 card.style.animation = `slideUp 0.5s ease-out ${index * 0.15}s forwards`;
                 card.style.opacity = '0';
+                card.className = `slot-card glass-panel p-8 rounded-2xl text-center shadow-xl ${isFree ? 'text-green-500 border-green-900/30' : 'text-red-500 border-red-900/30'}`;
                 
-                card.className = `slot-card glass-panel p-8 rounded-2xl text-center relative shadow-xl ${isFree ? 'text-green-500 border-green-900/30' : 'text-red-500 border-red-900/30'}`;
-                
-                let content = `
-                    <div class="text-4xl font-black mb-3 tracking-tight">${slot.time}</div>
-                    <div class="inline-block px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-6 ${isFree ? 'bg-green-900/30 text-green-400 border border-green-500/30' : 'bg-red-900/30 text-red-400 border border-red-500/30'}">
-                        ${isFree ? '🟢 Свободно' : '🔒 Занято'}
-                    </div>
+                card.innerHTML = `
+                    <div class="text-4xl font-black mb-3">${slot.time}</div>
+                    <div class="inline-block px-4 py-1 rounded-full text-xs font-bold uppercase mb-6 ${isFree ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'}">${isFree ? '🟢 Свободно' : '🔒 Занято'}</div>
+                    ${!isFree ? `
+                        <div class="bg-red-950/30 p-4 rounded-xl">
+                            <div class="text-red-400 font-bold mb-2"><i class="fas fa-user-shield mr-2"></i>${slot.user || 'Не указано'}</div>
+                            <div class="bg-red-900/40 p-3 rounded-lg"><div class="text-xs text-gray-400 uppercase mb-1"><i class="fas fa-book-open mr-1"></i>Мероприятие</div><div class="text-white">${slot.desc || 'Без описания'}</div></div>
+                        </div>
+                    ` : `
+                        <div class="bg-green-950/30 p-4 rounded-xl mb-4"><div class="text-green-400"><i class="fas fa-check-circle mr-2"></i>Доступно для брони</div></div>
+                        <button onclick="document.getElementById('bookTime').value='${slot.time}'; updateValidationUI(true, 'Готово'); document.getElementById('bookNick').focus();" class="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-xl transition"><i class="fas fa-calendar-plus mr-2"></i>Забронировать</button>
+                    `}
                 `;
-                
-                if (!isFree) {
-                    content += `
-                        <div class="bg-red-950/30 p-4 rounded-xl border border-red-900/30 text-sm text-gray-300 backdrop-blur-sm">
-                            <div class="flex items-center justify-center gap-2 mb-3 text-red-400 font-bold text-lg">
-                                <i class="fas fa-user-shield"></i> ${slot.user || 'Не указано'}
-                            </div>
-                            <div class="bg-red-900/40 p-3 rounded-lg border border-red-800/30">
-                                <div class="text-xs text-gray-400 uppercase mb-1">
-                                    <i class="fas fa-book-open mr-1"></i>Мероприятие
-                                </div>
-                                <div class="text-white font-medium">
-                                    ${slot.desc || 'Без описания'}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    content += `
-                        <div class="bg-green-950/30 p-4 rounded-xl border border-green-900/30 text-sm text-gray-300 backdrop-blur-sm mb-4">
-                            <div class="text-green-400 font-medium">
-                                <i class="fas fa-check-circle mr-2"></i>Доступно для брони
-                            </div>
-                            <div class="text-xs text-gray-500 mt-1">Нажмите кнопку ниже чтобы забронировать</div>
-                        </div>
-                        <button onclick="document.getElementById('bookTime').value='${slot.time}'; updateValidationUI(true, 'Готово к бронированию'); document.getElementById('bookNick').focus(); switchTab('schedule'); document.getElementById('schedule').scrollIntoView({behavior: 'smooth'});" class="mt-2 bg-green-600 hover:bg-green-500 text-white text-sm font-bold px-8 py-3 rounded-xl transition shadow-lg shadow-green-500/20 transform hover:scale-105 active:scale-95">
-                            <i class="fas fa-calendar-plus mr-2"></i>Забронировать
-                        </button>
-                    `;
-                }
-                
-                card.innerHTML = content;
                 container.appendChild(card);
             });
         }
 
         async function loadSchedule(showIndicator = true) {
             if (showIndicator) showRefreshIndicator(true);
-            
             try {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 10000);
-                
-                const response = await fetch(`${SCRIPT_URL}?action=getSchedule&spreadsheetId=${SPREADSHEET_ID}`, { 
-                    signal: controller.signal,
-                    cache: 'no-cache'
-                });
+                const response = await fetch(`${SCRIPT_URL}?action=getSchedule&spreadsheetId=${SPREADSHEET_ID}`, { signal: controller.signal, cache: 'no-cache' });
                 clearTimeout(timeout);
-                
-                if (!response.ok) throw new Error('Network response was not ok');
-                
+                if (!response.ok) throw new Error('Network error');
                 const data = await response.json();
                 if(data.error) throw new Error(data.error);
-                
                 scheduleData = data.schedule || [];
                 renderSchedule(scheduleData);
                 updateScheduleStats(scheduleData);
                 updateLastUpdateTime();
                 updateConnectionStatus(true);
-                
             } catch (error) {
-                console.error('Error loading schedule:', error);
                 updateConnectionStatus(false);
-                
-                // Show default free slots even on error
-                const defaultData = [
-                    { time: '10:00', status: 'free', user: '', desc: '' },
-                    { time: '14:00', status: 'free', user: '', desc: '' },
-                    { time: '18:00', status: 'free', user: '', desc: '' }
-                ];
+                const defaultData = [{ time: '10:00', status: 'free', user: '', desc: '' }, { time: '14:00', status: 'free', user: '', desc: '' }, { time: '18:00', status: 'free', user: '', desc: '' }];
                 renderSchedule(defaultData);
                 updateScheduleStats(defaultData);
-                
                 showToast("Используются данные по умолчанию", "warning");
             } finally {
                 showRefreshIndicator(false);
@@ -1158,33 +1025,33 @@
         }
 
         function stopAutoRefresh() {
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-                autoRefreshInterval = null;
-            }
+            if (autoRefreshInterval) { clearInterval(autoRefreshInterval); autoRefreshInterval = null; }
         }
 
-        // ==================== STAFF ====================
+        // ==================== STAFF WITH SMOOTH ANIMATIONS ====================
         
         async function loadStaff() {
             const loadingEl = document.getElementById('staffLoading');
             const errorEl = document.getElementById('staffError');
             const container = document.getElementById('staffContainer');
+            const statusText = document.getElementById('staffStatusText');
             const errorMsg = document.getElementById('staffErrorMessage');
             
             loadingEl.classList.remove('hidden');
             errorEl.classList.add('hidden');
             container.classList.add('hidden');
+            container.innerHTML = '';
+            statusText.textContent = 'Загрузка...';
             
             const requiredStructure = [
-                { role: 'commander', count: 1, title: 'Командир ЦППС', icon: 'fa-crown', color: 'text-yellow-500', badgeClass: 'commander-badge' },
-                { role: 'deputy', count: 2, title: 'Заместитель командира', icon: 'fa-star', color: 'text-blue-400', badgeClass: 'deputy-badge' },
-                { role: 'curator', count: 3, title: 'Куратор', icon: 'fa-user-tie', color: 'text-green-400', badgeClass: 'curator-badge' }
+                { role: 'commander', count: 1, title: 'Командир ЦППС', icon: 'fa-crown', color: 'text-yellow-500', badgeClass: 'commander-badge', delayClass: 'commander' },
+                { role: 'deputy', count: 2, title: 'Заместитель командира', icon: 'fa-star', color: 'text-blue-400', badgeClass: 'deputy-badge', delayClass: 'deputy' },
+                { role: 'curator', count: 3, title: 'Куратор', icon: 'fa-user-tie', color: 'text-green-400', badgeClass: 'curator-badge', delayClass: 'curator' }
             ];
 
             try {
                 const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 10000);
+                const timeout = setTimeout(() => controller.abort(), 15000);
                 
                 const response = await fetch(`${SCRIPT_URL}?action=getStaff&spreadsheetId=${SPREADSHEET_ID}`, {
                     signal: controller.signal,
@@ -1192,33 +1059,39 @@
                 });
                 clearTimeout(timeout);
                 
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 const data = await response.json();
-                console.log('Staff data received:', data);
+                console.log('Staff API Response:', data);
                 
                 if(data.error) throw new Error(data.error);
                 
                 loadingEl.classList.add('hidden');
                 container.classList.remove('hidden');
-                renderStaffStructure(requiredStructure, data.staff || []);
+                statusText.textContent = 'Актуально';
+                statusText.parentElement.classList.remove('error');
+                
+                renderStaffWithAnimation(requiredStructure, data.staff || []);
                 updateConnectionStatus(true);
                 
             } catch (error) {
-                console.error('Error loading staff:', error);
+                console.error('Staff load error:', error);
                 loadingEl.classList.add('hidden');
                 errorEl.classList.remove('hidden');
-                errorMsg.textContent = 'Ошибка: ' + error.message;
+                errorMsg.textContent = error.message || 'Ошибка сети';
+                statusText.textContent = 'Ошибка';
+                statusText.parentElement.classList.add('error');
                 updateConnectionStatus(false);
                 showToast("Ошибка загрузки состава", "error");
             }
         }
 
-        function renderStaffStructure(structure, staffData) {
+        function renderStaffWithAnimation(structure, staffData) {
             const container = document.getElementById('staffContainer');
             container.innerHTML = '';
             
             let staffIndex = 0;
+            let cardIndex = 0;
 
             structure.forEach(group => {
                 for (let i = 0; i < group.count; i++) {
@@ -1230,11 +1103,17 @@
                     const displayRank = isVacant ? '' : (person.rank || '');
                     const displayVK = !isVacant && person.vk ? person.vk : '';
                     const cardClass = isVacant ? 'vacant-card' : 'staff-card-inner';
+                    
+                    // Determine delay class for staggered animation
+                    let delayClass = group.delayClass;
+                    if (group.role === 'deputy') delayClass += `-${i + 1}`;
+                    if (group.role === 'curator') delayClass += `-${i + 1}`;
 
+                    const wrapper = document.createElement('div');
+                    wrapper.className = `staff-card-wrapper ${delayClass}`;
+                    
                     const card = document.createElement('div');
                     card.className = `${cardClass} p-6 rounded-2xl flex flex-col items-center text-center relative overflow-hidden group`;
-                    card.style.animation = `slideUp 0.5s ease-out ${container.children.length * 0.1}s forwards`;
-                    card.style.opacity = '0';
 
                     let content = `
                         <div class="w-20 h-20 rounded-full staff-avatar flex items-center justify-center text-3xl font-black text-white shadow-lg mb-4 flex-shrink-0">
@@ -1243,28 +1122,30 @@
                         <div class="w-full">
                             <div class="font-bold text-xl truncate ${isVacant ? 'vacant-text' : 'text-white'} mb-1">${displayName}</div>
                             <div class="${group.color} text-sm font-semibold mb-2">${group.title}</div>
-                            ${!isVacant && displayRank ? `
-                                <div class="rank-badge text-xs font-bold uppercase py-1 px-3 rounded-full inline-block mb-3">
-                                    ${displayRank}
-                                </div>
-                            ` : ''}
-                            ${!isVacant && displayVK ? `
-                                <a href="${displayVK}" target="_blank" class="vk-button inline-flex items-center gap-2 text-white text-sm font-medium py-2 px-4 rounded-lg mt-2">
-                                    <i class="fab fa-vk"></i>
-                                    <span>Связаться VK</span>
-                                </a>
-                            ` : ''}
-                            ${isVacant ? `
-                                <div class="text-gray-600 text-xs mt-4 py-2 px-4 border border-gray-700 rounded-lg">
-                                    <i class="fas fa-hourglass-half mr-2"></i>Должность свободна
-                                </div>
-                            ` : ''}
+                            ${!isVacant && displayRank ? `<div class="rank-badge text-xs font-bold uppercase py-1 px-3 rounded-full inline-block mb-3">${displayRank}</div>` : ''}
+                            ${!isVacant && displayVK ? `<a href="${displayVK}" target="_blank" class="vk-button inline-flex items-center gap-2 text-white text-sm font-medium py-2 px-4 rounded-lg mt-2"><i class="fab fa-vk"></i><span>Связаться VK</span></a>` : ''}
+                            ${isVacant ? `<div class="text-gray-600 text-xs mt-4 py-2 px-4 border border-gray-700 rounded-lg"><i class="fas fa-hourglass-half mr-2"></i>Должность свободна</div>` : ''}
                         </div>
                     `;
                     
                     card.innerHTML = content;
-                    container.appendChild(card);
+                    wrapper.appendChild(card);
+                    container.appendChild(wrapper);
+                    
+                    cardIndex++;
                 }
+            });
+
+            // Trigger animations after DOM is ready
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    const wrappers = container.querySelectorAll('.staff-card-wrapper');
+                    wrappers.forEach((wrapper, idx) => {
+                        setTimeout(() => {
+                            wrapper.classList.add('loaded');
+                        }, idx * 150);
+                    });
+                }, 100);
             });
         }
 
@@ -1272,15 +1153,9 @@
         
         document.getElementById('bookingForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            
             const nick = document.getElementById('bookNick').value.trim();
             const validation = validateNickname(nick);
-            
-            if (!validation.valid) {
-                updateValidationUI(false, validation.message);
-                showToast(validation.message, 'error');
-                return;
-            }
+            if (!validation.valid) { updateValidationUI(false, validation.message); showToast(validation.message, 'error'); return; }
             
             const btn = document.getElementById('submitBtn');
             const msg = document.getElementById('bookingMessage');
@@ -1290,13 +1165,7 @@
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Обработка...';
             msg.innerHTML = '';
 
-            const data = {
-                action: 'bookSlot',
-                time: document.getElementById('bookTime').value,
-                nick: nick,
-                desc: document.getElementById('bookDesc').value,
-                spreadsheetId: SPREADSHEET_ID
-            };
+            const data = { action: 'bookSlot', time: document.getElementById('bookTime').value, nick: nick, desc: document.getElementById('bookDesc').value, spreadsheetId: SPREADSHEET_ID };
 
             fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) })
             .then(res => res.json())
@@ -1304,20 +1173,20 @@
                 btn.disabled = false;
                 btn.innerHTML = originalText;
                 if(data.success) {
-                    msg.innerHTML = '<span class="text-green-400"><i class="fas fa-check-circle"></i> Успешно забронировано!</span>';
+                    msg.innerHTML = '<span class="text-green-400"><i class="fas fa-check-circle"></i> Успешно!</span>';
                     document.getElementById('bookingForm').reset();
                     clearValidationUI();
-                    showToast("Бронь успешно создана", "success");
+                    showToast("Бронь создана", "success");
                     loadSchedule();
                 } else {
-                    msg.innerHTML = `<span class="text-red-400"><i class="fas fa-times-circle"></i> Ошибка: ${data.message}</span>`;
-                    showToast(data.message || "Ошибка бронирования", "error");
+                    msg.innerHTML = `<span class="text-red-400"><i class="fas fa-times-circle"></i> ${data.message}</span>`;
+                    showToast(data.message, "error");
                 }
             })
-            .catch(err => {
+            .catch(() => {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
-                msg.innerHTML = '<span class="text-red-400"><i class="fas fa-times-circle"></i> Ошибка сети</span>';
+                msg.innerHTML = '<span class="text-red-400">Ошибка сети</span>';
                 showToast("Нет соединения", "error");
             });
         });
@@ -1334,19 +1203,9 @@
 
             const resultRadios = document.getElementsByName('examResult');
             let resultValue = '';
-            for (const radio of resultRadios) {
-                if (radio.checked) resultValue = radio.value;
-            }
+            for (const radio of resultRadios) { if (radio.checked) resultValue = radio.value; }
 
-            const data = {
-                action: 'addReport',
-                type: document.getElementById('repType').value,
-                topic: document.getElementById('repTopic').value,
-                instructor: document.getElementById('repInstructor').value,
-                students: document.getElementById('repStudents').value,
-                result: resultValue,
-                spreadsheetId: SPREADSHEET_ID
-            };
+            const data = { action: 'addReport', type: document.getElementById('repType').value, topic: document.getElementById('repTopic').value, instructor: document.getElementById('repInstructor').value, students: document.getElementById('repStudents').value, result: resultValue, spreadsheetId: SPREADSHEET_ID };
 
             fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) })
             .then(res => res.json())
@@ -1354,34 +1213,30 @@
                 btn.disabled = false;
                 btn.innerText = originalText;
                 if(data.success) {
-                    msg.innerHTML = '<span class="text-green-400"><i class="fas fa-check-circle"></i> Отчет добавлен!</span>';
+                    msg.innerHTML = '<span class="text-green-400"><i class="fas fa-check-circle"></i> Отправлен!</span>';
                     e.target.reset();
                     updateTopics();
-                    showToast("Отчет успешно отправлен", "success");
+                    showToast("Отчет отправлен", "success");
                 } else {
-                    msg.innerHTML = '<span class="text-red-400"><i class="fas fa-times-circle"></i> Ошибка сохранения</span>';
-                    showToast("Ошибка сохранения", "error");
+                    msg.innerHTML = '<span class="text-red-400">Ошибка</span>';
+                    showToast("Ошибка", "error");
                 }
             })
-            .catch(err => {
+            .catch(() => {
                 btn.disabled = false;
                 btn.innerText = originalText;
-                msg.innerHTML = '<span class="text-red-400"><i class="fas fa-times-circle"></i> Ошибка сети</span>';
+                msg.innerHTML = '<span class="text-red-400">Ошибка сети</span>';
                 showToast("Нет соединения", "error");
             });
         });
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             updateTopics();
             document.getElementById('submitBtn').disabled = true;
-            // Load schedule on page load
             loadSchedule();
         });
 
-        window.addEventListener('beforeunload', () => {
-            stopAutoRefresh();
-        });
+        window.addEventListener('beforeunload', () => stopAutoRefresh());
     </script>
 </body>
 </html>
