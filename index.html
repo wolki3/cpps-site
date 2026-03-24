@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ЦППС УГИБДД | AMAZING FIRE</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Fonts -->
+    <link href="https://fontsource.org/roboto.css" rel="stylesheet">
+    <link href="https://fontsource.org/montserrat.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        police: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                            accent: '#3b82f6',
+                            fire: '#ef4444',
+                            gold: '#fbbf24'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Roboto', 'sans-serif'],
+                        header: ['Montserrat', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        glow: {
+                            '0%': { textShadow: '0 0 10px rgba(239, 68, 68, 0.5)' },
+                            '100%': { textShadow: '0 0 20px rgba(239, 68, 68, 0.9), 0 0 30px rgba(239, 68, 68, 0.6)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            font-family: 'Roboto', sans-serif;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, .brand-font {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .amazing-fire-glow {
+            background: linear-gradient(to right, #ef4444, #f87171, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .slot-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        .slot-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: currentColor;
+            opacity: 0.5;
+        }
+        .slot-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+        }
+        .hidden-section {
+            display: none;
+            opacity: 0;
+        }
+        .active-section {
+            display: block;
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            border-left: 4px solid #3b82f6;
+            font-weight: 500;
+        }
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        .toast.error { border-left-color: #ef4444; }
+        .toast.success { border-left-color: #10b981; }
+        
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+        .staff-card-inner {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+        .staff-card-inner:hover {
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+        .vacant-card {
+            background: repeating-linear-gradient(
+                45deg,
+                #1e293b,
+                #1e293b 10px,
+                #0f172a 10px,
+                #0f172a 20px
+            );
+            border: 1px dashed #64748b;
+        }
+        .vacant-text {
+            color: #64748b;
+        }
+
+        .nav-glow {
+            position: relative;
+        }
+        .nav-glow::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #ef4444);
+            transition: width 0.3s ease;
+        }
+        .nav-glow.active::after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen selection:bg-police-accent selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="bg-police-900/90 border-b border-police-700 sticky top-0 z-50 shadow-2xl backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-4">
+                    <div class="relative group">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-police-accent to-police-fire rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                        <div class="relative bg-police-800 p-2.5 rounded-lg shadow-lg">
+                            <i class="fas fa-shield-alt text-2xl text-white"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold text-white tracking-wide brand-font leading-tight">
+                            ЦППС <span class="amazing-fire-glow font-black">AMAZING FIRE</span>
+                        </h1>
+                        <p class="text-[10px] md:text-xs text-blue-300 uppercase tracking-[0.2em] font-semibold opacity-80">УГИБДД • Обучение • Аттестация</p>
+                    </div>
+                </div>
+                
+                <div class="md:hidden">
+                    <button onclick="toggleMobileMenu()" class="text-gray-300 hover:text-white focus:outline-none p-2 rounded-md hover:bg-police-800 transition">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-1">
+                        <button onclick="switchTab('dashboard')" class="nav-item nav-glow active px-4 py-2 rounded-lg text-sm font-medium text-white bg-police-700/50 backdrop-blur shadow-sm transition-all hover:shadow-md hover:bg-police-700">Главная</button>
+                        <button onclick="switchTab('schedule')" class="nav-item nav-glow px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-police-700/50 transition-all">Расписание</button>
+                        <button onclick="switchTab('reports')" class="nav-item nav-glow px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-police-700/50 transition-all">Отчетность</button>
+                        <button onclick="switchTab('staff')" class="nav-item nav-glow px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-police-700/50 transition-all">Состав</button>
+                        <button onclick="switchTab('info')" class="nav-item nav-glow px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-police-700/50 transition-all">Инфо</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-police-900 border-t border-police-800 shadow-xl">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <button onclick="switchTab('dashboard'); toggleMobileMenu()" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-white bg-police-800">Главная</button>
+                <button onclick="switchTab('schedule'); toggleMobileMenu()" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-police-800">Расписание</button>
+                <button onclick="switchTab('reports'); toggleMobileMenu()" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-police-800">Отчетность</button>
+                <button onclick="switchTab('staff'); toggleMobileMenu()" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-police-800">Состав</button>
+                <button onclick="switchTab('info'); toggleMobileMenu()" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-police-800">Инфо</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8 md:py-12">
+        
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="active-section">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+                <div class="lg:col-span-2 glass-panel rounded-2xl p-8 shadow-2xl relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-police-accent rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition duration-700"></div>
+                    <div class="flex items-center gap-4 mb-6 relative z-10">
+                        <div class="p-3 bg-police-accent/20 rounded-xl text-police-accent">
+                            <i class="fas fa-bullhorn text-2xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white">Оперативная информация</h2>
+                    </div>
+                    <div class="space-y-6 text-gray-300 text-base relative z-10">
+                        <div class="flex items-start gap-3 p-4 bg-police-900/50 rounded-xl border border-police-700/50">
+                            <i class="fas fa-exclamation-circle text-yellow-500 mt-1 flex-shrink-0"></i>
+                            <p>
+                                <strong class="text-white">Внимание:</strong> Лекции проводятся минимум 5 минут от 3 человек. Стажеры работают только под присмотром кураторов.
+                            </p>
+                        </div>
+                        <div class="bg-gradient-to-r from-police-800 to-police-900 p-6 rounded-xl border-l-4 border-police-accent shadow-lg">
+                            <h3 class="font-bold text-white mb-3 text-lg"><i class="fas fa-list-check mr-2 text-police-accent"></i>Алгоритм работы инструктора:</h3>
+                            <ol class="list-decimal list-inside space-y-2 text-gray-400 marker:text-police-accent">
+                                <li>Проверить наличие курсанта в таблице начальных лекций.</li>
+                                <li>Забронировать время для строя (10:00 / 14:00 / 18:00).</li>
+                                <li>Провести занятие и отписать в чат отчетности.</li>
+                                <li>Заполнить отчетную ведомость на форуме.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <a href="https://sites.google.com/view/metodiccppsfire" target="_blank" class="group flex items-center gap-5 p-6 bg-police-800 rounded-2xl border border-police-700 hover:border-police-accent hover:shadow-lg hover:shadow-police-accent/20 transition-all duration-300 transform hover:-translate-y-1">
+                        <div class="bg-police-900 p-4 rounded-xl group-hover:bg-police-accent group-hover:text-white transition-colors duration-300 text-police-accent">
+                            <i class="fas fa-book text-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-white text-lg">Методичка</div>
+                            <div class="text-xs text-gray-400 group-hover:text-blue-200 transition">Правила и лекции</div>
+                        </div>
+                        <i class="fas fa-chevron-right ml-auto text-gray-600 group-hover:text-white transition"></i>
+                    </a>
+                    <a href="https://vk.me/join/pcYgyO47p58Czw2Bzmmt2G9MSjPOdnn/ZWo=" target="_blank" class="group flex items-center gap-5 p-6 bg-police-800 rounded-2xl border border-police-700 hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-1">
+                        <div class="bg-police-900 p-4 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300 text-blue-500">
+                            <i class="fab fa-vk text-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-white text-lg">Чат Отчетности</div>
+                            <div class="text-xs text-gray-400 group-hover:text-blue-200 transition">Обязательно для всех</div>
+                        </div>
+                        <i class="fas fa-chevron-right ml-auto text-gray-600 group-hover:text-white transition"></i>
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/14woBSDMK9W6QWmhn7kfr_BBRtFN5la9yVVv-XkPZXJM/edit" target="_blank" class="group flex items-center gap-5 p-6 bg-police-800 rounded-2xl border border-police-700 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 transform hover:-translate-y-1">
+                        <div class="bg-police-900 p-4 rounded-xl group-hover:bg-green-600 group-hover:text-white transition-colors duration-300 text-green-500">
+                            <i class="fas fa-table text-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-white text-lg">Таблица ЦППС</div>
+                            <div class="text-xs text-gray-400 group-hover:text-green-200 transition">Реестр сотрудников</div>
+                        </div>
+                        <i class="fas fa-chevron-right ml-auto text-gray-600 group-hover:text-white transition"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-8 shadow-2xl">
+                <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                    <div class="w-2 h-8 bg-police-fire rounded-full animate-pulse"></div>
+                    Шаблоны докладов в рацию
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-black/40 p-5 rounded-xl border border-gray-700 hover:border-gray-500 transition group">
+                        <p class="text-xs text-gray-500 mb-2 uppercase font-bold tracking-wider group-hover:text-police-accent transition">Начало базового</p>
+                        <code class="text-green-400 text-sm font-mono block break-words leading-relaxed">/r Докладывает Фамилия : начал проводить базовый рядовому Фамилия.</code>
+                    </div>
+                    <div class="bg-black/40 p-5 rounded-xl border border-gray-700 hover:border-gray-500 transition group">
+                        <p class="text-xs text-gray-500 mb-2 uppercase font-bold tracking-wider group-hover:text-police-accent transition">Конец базового</p>
+                        <code class="text-green-400 text-sm font-mono block break-words leading-relaxed">/r Докладывает Фамилия : закончил проводить базовый рядовому Фамилия. Итог - сдал/не сдал.</code>
+                    </div>
+                    <div class="bg-black/40 p-5 rounded-xl border border-gray-700 hover:border-gray-500 transition md:col-span-2 group">
+                        <p class="text-xs text-gray-500 mb-2 uppercase font-bold tracking-wider group-hover:text-police-accent transition">Аттестация (Отдельная рота)</p>
+                        <code class="text-green-400 text-sm font-mono block break-words leading-relaxed">/r Докладывает Фамилия : начал/закончил принимать аттестацию у сержанта Фамилия. Итог - сдал/не сдал.</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCHEDULE -->
+        <section id="schedule" class="hidden-section">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-white mb-3 tracking-tight">Расписание плановых строев</h2>
+                <div class="h-1 w-24 bg-police-fire mx-auto rounded-full mb-4"></div>
+                <p class="text-gray-400 text-lg">Бронь сбрасывается ежедневно в 00:00 по МСК</p>
+            </div>
+            
+            <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="col-span-1 md:col-span-3 flex flex-col items-center justify-center py-12">
+                    <div class="relative w-20 h-20 mb-6">
+                        <div class="absolute top-0 left-0 w-full h-full border-4 border-police-800 rounded-full"></div>
+                        <div class="absolute top-0 left-0 w-full h-full border-4 border-t-police-accent border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+                    </div>
+                    <p class="text-gray-400 text-lg animate-pulse">Загрузка актуального расписания...</p>
+                </div>
+            </div>
+
+            <div class="glass-panel p-8 md:p-10 rounded-3xl shadow-2xl max-w-4xl mx-auto border-t border-police-accent/30">
+                <h3 class="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+                    <i class="fas fa-calendar-plus text-police-accent"></i> Забронировать время
+                </h3>
+                <form id="bookingForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="group">
+                            <label class="block text-sm font-bold text-gray-400 mb-2 group-focus-within:text-police-accent transition">Игровой ник (Amazing Online)</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-user text-gray-500 group-focus-within:text-police-accent transition"></i>
+                                </div>
+                                <input type="text" id="bookNick" placeholder="Ivan_Ivanov" class="w-full bg-police-900/50 border border-police-700 rounded-xl pl-11 pr-4 py-4 text-white focus:outline-none focus:border-police-accent focus:ring-2 focus:ring-police-accent/20 transition shadow-inner" required pattern="[A-Za-z_]+">
+                            </div>
+                        </div>
+                        <div class="group">
+                            <label class="block text-sm font-bold text-gray-400 mb-2 group-focus-within:text-police-accent transition">Время занятия</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-clock text-gray-500 group-focus-within:text-police-accent transition"></i>
+                                </div>
+                                <select id="bookTime" class="w-full bg-police-900/50 border border-police-700 rounded-xl pl-11 pr-4 py-4 text-white focus:outline-none focus:border-police-accent focus:ring-2 focus:ring-police-accent/20 transition shadow-inner appearance-none" required>
+                                    <option value="">Выберите время...</option>
+                                    <option value="10:00">10:00 - Утренний строй</option>
+                                    <option value="14:00">14:00 - Дневной строй</option>
+                                    <option value="18:00">18:00 - Вечерний строй</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group">
+                        <label class="block text-sm font-bold text-gray-400 mb-2 group-focus-within:text-police-accent transition">Тема / Описание</label>
+                        <div class="relative">
+                            <div class="absolute top-4 left-4 pointer-events-none">
+                                <i class="fas fa-pen text-gray-500 group-focus-within:text-police-accent transition"></i>
+                            </div>
+                            <input type="text" id="bookDesc" placeholder="Например: Тренировка по задержанию" class="w-full bg-police-900/50 border border-police-700 rounded-xl pl-11 pr-4 py-4 text-white focus:outline-none focus:border-police-accent focus:ring-2 focus:ring-police-accent/20 transition shadow-inner" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-police-accent to-blue-600 hover:from-blue-600 hover:to-police-accent text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-500/30 transform active:scale-[0.98] flex items-center justify-center gap-2 group">
+                        <span>Подтвердить бронь</span>
+                        <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                    <div id="bookingMessage" class="text-center text-sm font-medium min-h-[24px]"></div>
+                </form>
+            </div>
+        </section>
+
+        <!-- REPORTS -->
+        <section id="reports" class="hidden-section">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 glass-panel p-8 rounded-2xl shadow-2xl border-t border-green-500/30">
+                    <h3 class="text-2xl font-bold text-green-400 mb-8 flex items-center gap-3">
+                        <i class="fas fa-file-signature"></i> Внести данные в реестр
+                    </h3>
+                    <form id="reportForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-400 mb-2">Тип мероприятия</label>
+                                <select id="repType" class="w-full bg-police-900/50 border border-police-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition" onchange="updateTopics()">
+                                    <option value="training">Тренировка</option>
+                                    <option value="lecture">Лекция</option>
+                                    <option value="initial">Начальная лекция</option>
+                                    <option value="basic_exam">Базовый экзамен</option>
+                                    <option value="inter_exam">Промежуточная аттестация</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-400 mb-2">Тема</label>
+                                <select id="repTopic" class="w-full bg-police-900/50 border border-police-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-400 mb-2">Инструктор (Кто провел)</label>
+                            <input type="text" id="repInstructor" placeholder="Фамилия" class="w-full bg-police-900/50 border border-police-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-400 mb-2">Курсанты (Ники через запятую)</label>
+                            <textarea id="repStudents" placeholder="Ivan_Ivanov, Petr_Petrov" class="w-full bg-police-900/50 border border-police-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition h-24 resize-none" required></textarea>
+                            <p class="text-xs text-gray-500 mt-2 flex items-center gap-1"><i class="fas fa-info-circle"></i> Разделяйте ники запятой для корректного внесения.</p>
+                        </div>
+
+                        <div id="examResultBlock" class="hidden bg-police-900/50 p-5 rounded-xl border border-police-700">
+                            <label class="block text-sm font-bold text-gray-400 mb-3">Результат экзамена</label>
+                            <div class="flex gap-6">
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <div class="relative flex items-center">
+                                        <input type="radio" name="examResult" value="Сдал" checked class="peer sr-only">
+                                        <div class="w-5 h-5 border-2 border-gray-600 rounded-full peer-checked:border-green-500 peer-checked:bg-green-500 transition-all"></div>
+                                        <div class="absolute w-5 h-5 bg-white rounded-full scale-0 peer-checked:scale-50 transition-all"></div>
+                                    </div>
+                                    <span class="text-white font-medium group-hover:text-green-400 transition">Сдал</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <div class="relative flex items-center">
+                                        <input type="radio" name="examResult" value="Не сдал" class="peer sr-only">
+                                        <div class="w-5 h-5 border-2 border-gray-600 rounded-full peer-checked:border-red-500 peer-checked:bg-red-500 transition-all"></div>
+                                        <div class="absolute w-5 h-5 bg-white rounded-full scale-0 peer-checked:scale-50 transition-all"></div>
+                                    </div>
+                                    <span class="text-white font-medium group-hover:text-red-400 transition">Не сдал</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-green-500/20 transform active:scale-[0.98]">
+                            Отправить отчет
+                        </button>
+                        <div id="reportMessage" class="text-center text-sm font-medium min-h-[24px]"></div>
+                    </form>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="glass-panel p-6 rounded-2xl shadow-xl border-t border-blue-500/30">
+                        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                            <i class="fas fa-hashtag text-police-accent"></i> Хэштеги для VK
+                        </h3>
+                        <div class="grid grid-cols-2 gap-3 text-xs font-mono text-blue-300 bg-black/20 p-4 rounded-xl border border-white/5">
+                            <div class="border-b border-gray-700 pb-2 hover:text-white transition cursor-default">#нл Ник</div>
+                            <div class="border-b border-gray-700 pb-2 hover:text-white transition cursor-default">#бэ Ник</div>
+                            <div class="border-b border-gray-700 pb-2 hover:text-white transition cursor-default">#УК Ник</div>
+                            <div class="border-b border-gray-700 pb-2 hover:text-white transition cursor-default">#КоАП Ник</div>
+                            <div class="border-b border-gray-700 pb-2 hover:text-white transition cursor-default">#ФЗоП Ник</div>
+                            <div class="border-b border-gray-700 pb-2 hover:text-white transition cursor-default">#пт Ник</div>
+                            <div class="col-span-2 text-center pt-2 text-gray-500 hover:text-white transition cursor-default">#строй</div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl shadow-xl border-t border-purple-500/30">
+                        <h3 class="text-lg font-bold text-white mb-3">Список тем</h3>
+                        <div class="text-xs text-gray-400 space-y-3 max-h-64 overflow-y-auto pr-2">
+                            <div>
+                                <span class="font-bold text-police-accent block mb-1">Тренировки:</span>
+                                <span class="opacity-70">Оцепление, Задержание, Строевая, Физподготовка, ДТП, Первая помощь.</span>
+                            </div>
+                            <div>
+                                <span class="font-bold text-police-accent block mb-1">Лекции:</span>
+                                <span class="opacity-70">УК, КоАП, ФЗ о Полиции, Конституция, ФЗ об Оружии, ПДД, Субординация, Рация, SOS и др.</span>
+                            </div>
+                            <div>
+                                <span class="font-bold text-police-accent block mb-1">Начальные (5 шт):</span>
+                                <span class="opacity-70">Законодательство, УК+КоАП, ФЗ Полиция+Задержание, ФЗ Оружие, Основа службы УГИБДД.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STAFF -->
+        <section id="staff" class="hidden-section">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-white mb-3">Личный состав ЦППС</h2>
+                <div class="h-1 w-24 bg-police-accent mx-auto rounded-full"></div>
+            </div>
+            <div id="staffContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="col-span-full text-center py-12">
+                    <div class="inline-block p-4 rounded-full bg-police-800 mb-4 animate-pulse">
+                        <i class="fas fa-users text-4xl text-police-accent"></i>
+                    </div>
+                    <p class="text-gray-400 text-lg">Загрузка данных о сотрудниках...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- INFO -->
+        <section id="info" class="hidden-section">
+            <div class="max-w-4xl mx-auto space-y-8">
+                <div class="glass-panel p-8 md:p-10 rounded-3xl shadow-2xl border border-police-700">
+                    <h3 class="text-3xl font-bold text-police-accent mb-6">Отчетная ведомость</h3>
+                    <p class="text-gray-300 mb-8 text-lg leading-relaxed">
+                        Ежедневно необходимо составлять отчетную ведомость на официальном форуме Amazing Online. 
+                        Скриншоты работы загружаются на фотохостинг, ссылка вставляется в форму.
+                    </p>
+                    <a href="https://forum.amazing-online.com/threads/otchetnaja-vedomost-o-provedenii-uchebnyx-zanjatij-i-professionalnoj-dejatelnosti-ugibdd.1096076/page-8#post-8832009" target="_blank" class="inline-flex items-center gap-3 bg-police-accent hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg shadow-blue-500/30 transform hover:-translate-y-1">
+                        <i class="fas fa-external-link-alt"></i> Перейти к форме на форуме
+                    </a>
+                    
+                    <div class="mt-10 p-8 bg-black/40 rounded-2xl border border-gray-700 font-mono text-sm text-gray-400 space-y-4 shadow-inner">
+                        <div class="flex flex-col md:flex-row md:items-center border-b border-gray-700 pb-3"><span class="w-full md:w-1/3 text-gray-500 font-bold">Имя и фамилия (лат.):</span> <span class="border-b border-gray-600 flex-grow ml-2">_______________</span></div>
+                        <div class="flex flex-col md:flex-row md:items-center border-b border-gray-700 pb-3"><span class="w-full md:w-1/3 text-gray-500 font-bold">Должность и звание:</span> <span class="border-b border-gray-600 flex-grow ml-2">_______________</span></div>
+                        <div class="flex flex-col md:flex-row md:items-center border-b border-gray-700 pb-3"><span class="w-full md:w-1/3 text-gray-500 font-bold">Тема занятия:</span> <span class="border-b border-gray-600 flex-grow ml-2">_______________</span></div>
+                        <div class="flex flex-col md:flex-row md:items-center border-b border-gray-700 pb-3"><span class="w-full md:w-1/3 text-gray-500 font-bold">Дата и время:</span> <span class="border-b border-gray-600 flex-grow ml-2">_______________</span></div>
+                        <div class="flex flex-col md:flex-row md:items-center"><span class="w-full md:w-1/3 text-gray-500 font-bold">Доказательства:</span> <span class="text-blue-400 underline flex-grow ml-2 cursor-pointer hover:text-blue-300">[Ссылка на фотохостинг]</span></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-panel p-6 rounded-2xl border border-police-700 hover:border-police-accent transition duration-300 group">
+                        <h3 class="text-xl font-bold text-white mb-3 group-hover:text-police-accent transition">Методичка</h3>
+                        <p class="text-gray-400 text-sm mb-5">Полный свод правил, лекций и требований для сдачи экзаменов.</p>
+                        <a href="https://sites.google.com/view/metodiccppsfire" target="_blank" class="text-police-accent hover:text-white font-medium text-sm flex items-center gap-2 group-hover:gap-3 transition-all">Открыть методичку <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl border border-police-700 hover:border-police-accent transition duration-300 group">
+                        <h3 class="text-xl font-bold text-white mb-3 group-hover:text-police-accent transition">Чат Отчетности</h3>
+                        <p class="text-gray-400 text-sm mb-5">Обязательный чат для отписки хэштегов после проведения занятий.</p>
+                        <a href="https://vk.me/join/pcYgyO47p58Czw2Bzmmt2G9MSjPOdnn/ZWo=" target="_blank" class="text-police-accent hover:text-white font-medium text-sm flex items-center gap-2 group-hover:gap-3 transition-all">Вступить в чат <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-police-900 border-t border-police-800 py-10 mt-auto relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-police-accent to-transparent opacity-50"></div>
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <h2 class="text-3xl md:text-4xl font-black text-white mb-4 tracking-widest brand-font">
+                AMAZING <span class="amazing-fire-glow">FIRE</span>
+            </h2>
+            <p class="text-gray-500 text-xs md:text-sm mb-8 uppercase tracking-widest font-semibold">Официальный ресурс ЦППС УГИБДД</p>
+            
+            <div class="border-t border-police-800 pt-8">
+                <p class="text-xs text-gray-600">
+                    &copy; 2026 ЦППС УГИБДД. Все права защищены.<br>
+                    <span class="opacity-30 hover:opacity-100 transition duration-500 cursor-default mt-2 inline-block">Site developed by Volkov</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Message here</div>
+
+    <script>
+        // КОНФИГУРАЦИЯ - ВСТАВЬТЕ URL ВАШЕГО GOOGLE APPS SCRIPT
+        const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+        
+        const SPREADSHEET_ID = '14woBSDMK9W6QWmhn7kfr_BBRtFN5la9yVVv-XkPZXJM';
+        
+        const topics = {
+            training: ["Оцепление", "Задержание", "Строевая подготовка", "Физическая подготовка", "Оформление ДТП", "Первая доврачебная помощь"],
+            lecture: ["Уголовный кодекс", "Кодекс об административных правонарушениях", "Федеральный закон о полиции", "Федеральный закон о противодействии терроризму", "Закон Нижегородской области", "Конституция", "ФЗ о службе в ОВД", "Федеральный закон об оружии", "Задержание", "Первая доврачебная помощь", "Что делать если стали заложником", "Как не стать заложником", "Строевая подготовка", "Правила дорожного движения", "Субординация", "Служебная рация", "Состав преступления", "Порядок надзора в сфере БДД", "Устав органов внутренних дел", "Реагирование на вызов SOS", "Правила эвакуации ТС"],
+            initial: ["Законодательство", "Уголовный кодекс и КоАП", "ФЗ о полиции и задержание", "ФЗ об оружии", "Основа службы в УГИБДД"]
+        };
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('section').forEach(sec => {
+                sec.classList.remove('active-section');
+                sec.classList.add('hidden-section');
+            });
+            const target = document.getElementById(tabId);
+            target.classList.remove('hidden-section');
+            target.classList.add('active-section');
+
+            document.querySelectorAll('.nav-item').forEach((btn, idx) => {
+                btn.classList.remove('active', 'text-white', 'bg-police-700/50', 'shadow-sm');
+                btn.classList.add('text-gray-300');
+            });
+            
+            const navMap = { 'dashboard': 0, 'schedule': 1, 'reports': 2, 'staff': 3, 'info': 4 };
+            const activeBtn = document.querySelectorAll('.nav-item')[navMap[tabId]];
+            if(activeBtn) {
+                activeBtn.classList.remove('text-gray-300');
+                activeBtn.classList.add('active', 'text-white', 'bg-police-700/50', 'shadow-sm');
+            }
+            
+            if(tabId === 'schedule') loadSchedule();
+            if(tabId === 'staff') loadStaff();
+        }
+
+        function updateTopics() {
+            const type = document.getElementById('repType').value;
+            const topicSelect = document.getElementById('repTopic');
+            const examBlock = document.getElementById('examResultBlock');
+            
+            topicSelect.innerHTML = '';
+            
+            if (topics[type]) {
+                topics[type].forEach(t => topicSelect.add(new Option(t, t)));
+                examBlock.classList.add('hidden');
+            } else {
+                if(type === 'basic_exam') topicSelect.add(new Option("Базовый экзамен", "Базовый экзамен"));
+                if(type === 'inter_exam') topicSelect.add(new Option("Промежуточная аттестация", "Промежуточная аттестация"));
+                examBlock.classList.remove('hidden');
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById("toast");
+            toast.className = "toast show " + type;
+            toast.innerText = message;
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        async function loadSchedule() {
+            const container = document.getElementById('scheduleGrid');
+            
+            if (SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                setTimeout(() => {
+                    const mockData = [
+                        { time: '10:00', status: 'free', user: '', desc: '' },
+                        { time: '14:00', status: 'free', user: '', desc: '' },
+                        { time: '18:00', status: 'free', user: '', desc: '' }
+                    ];
+                    renderSchedule(mockData);
+                }, 800);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getSchedule&spreadsheetId=${SPREADSHEET_ID}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                if(data.error) throw new Error(data.error);
+                renderSchedule(data.schedule || []);
+            } catch (error) {
+                console.error('Error loading schedule:', error);
+                container.innerHTML = `
+                    <div class="col-span-3 bg-red-900/20 border border-red-500/50 p-8 rounded-2xl text-center shadow-lg">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-4 animate-bounce"></i>
+                        <p class="text-red-200 font-bold text-lg">Ошибка соединения с таблицей</p>
+                        <p class="text-red-300 text-sm mt-2">Проверьте подключение к интернету или настройки Google Script.</p>
+                    </div>
+                `;
+                showToast("Нет соединения с таблицей", "error");
+            }
+        }
+
+        function renderSchedule(data) {
+            const container = document.getElementById('scheduleGrid');
+            container.innerHTML = '';
+            
+            const timeSlots = ['10:00', '14:00', '18:00'];
+            
+            timeSlots.forEach((time, index) => {
+                const slot = data.find(s => s.time === time) || { time, status: 'free', user: '', desc: '' };
+                const isFree = slot.status === 'free';
+                
+                const card = document.createElement('div');
+                card.style.animation = `slideUp 0.5s ease-out ${index * 0.15}s forwards`;
+                card.style.opacity = '0';
+                
+                card.className = `slot-card glass-panel p-8 rounded-2xl text-center relative shadow-xl ${isFree ? 'text-green-500 border-green-900/30' : 'text-red-500 border-red-900/30'}`;
+                
+                let content = `
+                    <div class="text-4xl font-black mb-3 tracking-tight">${slot.time}</div>
+                    <div class="inline-block px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-6 ${isFree ? 'bg-green-900/30 text-green-400 border border-green-500/30' : 'bg-red-900/30 text-red-400 border border-red-500/30'}">
+                        ${isFree ? 'Свободно' : 'Занято'}
+                    </div>
+                `;
+                
+                if (!isFree) {
+                    content += `
+                        <div class="bg-red-950/30 p-4 rounded-xl border border-red-900/30 text-sm text-gray-300 backdrop-blur-sm">
+                            <div class="flex items-center justify-center gap-2 mb-2 text-red-400 font-bold">
+                                <i class="fas fa-user-shield"></i> ${slot.user}
+                            </div>
+                            <div class="text-xs text-gray-500 italic border-t border-red-900/20 pt-2">${slot.desc}</div>
+                        </div>
+                    `;
+                } else {
+                    content += `
+                        <button onclick="document.getElementById('bookTime').value='${slot.time}'; switchTab('schedule'); document.getElementById('schedule').scrollIntoView({behavior: 'smooth'});" class="mt-2 bg-green-600 hover:bg-green-500 text-white text-sm font-bold px-8 py-3 rounded-xl transition shadow-lg shadow-green-500/20 transform hover:scale-105 active:scale-95">
+                            Забронировать
+                        </button>
+                    `;
+                }
+                
+                card.innerHTML = content;
+                container.appendChild(card);
+            });
+        }
+
+        async function loadStaff() {
+            const container = document.getElementById('staffContainer');
+            
+            const requiredStructure = [
+                { role: 'commander', count: 1, title: 'Командир', icon: 'fa-crown', color: 'text-yellow-500' },
+                { role: 'deputy', count: 2, title: 'Заместитель', icon: 'fa-star', color: 'text-blue-400' },
+                { role: 'curator', count: 3, title: 'Куратор', icon: 'fa-user-tie', color: 'text-green-400' }
+            ];
+
+            if (SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                setTimeout(() => {
+                    renderStaffStructure(requiredStructure, []);
+                }, 800);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getStaff&spreadsheetId=${SPREADSHEET_ID}`);
+                const data = await response.json();
+                if(data.error) throw new Error(data.error);
+                renderStaffStructure(requiredStructure, data.staff || []);
+            } catch (error) {
+                container.innerHTML = `<div class="text-center text-red-400 col-span-full bg-red-900/20 border border-red-500/50 p-8 rounded-2xl"><i class="fas fa-exclamation-triangle text-3xl mb-3"></i><p>Ошибка загрузки списка сотрудников</p></div>`;
+                showToast("Нет соединения с таблицей", "error");
+            }
+        }
+
+        function renderStaffStructure(structure, staffData) {
+            const container = document.getElementById('staffContainer');
+            container.innerHTML = '';
+            
+            let staffIndex = 0;
+
+            structure.forEach(group => {
+                for (let i = 0; i < group.count; i++) {
+                    const person = (staffIndex < staffData.length) ? staffData[staffIndex] : null;
+                    staffIndex++;
+
+                    const isVacant = !person || !person.name || person.name.toString().trim() === '';
+                    const displayName = isVacant ? 'ВАКАНТНО' : person.name;
+                    const displayRank = isVacant ? '' : (person.rank || '');
+                    const cardClass = isVacant ? 'vacant-card' : 'staff-card-inner';
+
+                    const card = document.createElement('div');
+                    card.className = `${cardClass} p-6 rounded-2xl flex items-center space-x-5 relative overflow-hidden group`;
+                    card.style.animation = `slideUp 0.5s ease-out ${container.children.length * 0.1}s forwards`;
+                    card.style.opacity = '0';
+
+                    let content = `
+                        <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white shadow-lg flex-shrink-0 ${isVacant ? 'bg-gray-700' : 'bg-gradient-to-br from-police-accent to-blue-900'}">
+                            ${isVacant ? '<i class="fas fa-user-slash text-gray-500"></i>' : displayName.charAt(0)}
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <div class="font-bold text-lg truncate ${isVacant ? 'vacant-text' : 'text-white'}">${displayName}</div>
+                            <div class="${group.color} text-sm font-medium truncate">${group.title} ${i + 1}</div>
+                            ${!isVacant && displayRank ? `<div class="text-gray-500 text-xs uppercase mt-1 bg-police-900/50 inline-block px-2 py-0.5 rounded border border-gray-700">${displayRank}</div>` : ''}
+                        </div>
+                        ${!isVacant ? '<i class="fas fa-chevron-right text-gray-600 group-hover:text-white transition transform group-hover:translate-x-1"></i>' : ''}
+                    `;
+                    
+                    card.innerHTML = content;
+                    container.appendChild(card);
+                }
+            });
+        }
+
+        document.getElementById('bookingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const msg = document.getElementById('bookingMessage');
+            const originalText = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Обработка...';
+            msg.innerHTML = '';
+
+            const data = {
+                action: 'bookSlot',
+                time: document.getElementById('bookTime').value,
+                nick: document.getElementById('bookNick').value,
+                desc: document.getElementById('bookDesc').value,
+                spreadsheetId: SPREADSHEET_ID
+            };
+
+            if (SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    msg.innerHTML = '<span class="text-green-400"><i class="fas fa-check-circle"></i> Успешно (Демо режим)</span>';
+                    e.target.reset();
+                    showToast("Бронь успешно создана", "success");
+                }, 1500);
+                return;
+            }
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                if(data.success) {
+                    msg.innerHTML = '<span class="text-green-400"><i class="fas fa-check-circle"></i> Успешно забронировано!</span>';
+                    e.target.reset();
+                    showToast("Бронь успешно создана", "success");
+                    loadSchedule();
+                } else {
+                    msg.innerHTML = `<span class="text-red-400"><i class="fas fa-times-circle"></i> Ошибка: ${data.message}</span>`;
+                    showToast("Ошибка бронирования", "error");
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                msg.innerHTML = '<span class="text-red-400"><i class="fas fa-times-circle"></i> Ошибка сети</span>';
+                showToast("Нет соединения", "error");
+            });
+        });
+
+        document.getElementById('reportForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const msg = document.getElementById('reportMessage');
+            const originalText = btn.innerText;
+            
+            btn.disabled = true;
+            btn.innerText = 'Сохранение...';
+            msg.innerHTML = '';
+
+            const resultRadios = document.getElementsByName('examResult');
+            let resultValue = '';
+            for (const radio of resultRadios) {
+                if (radio.checked) resultValue = radio.value;
+            }
+
+            const data = {
+                action: 'addReport',
+                type: document.getElementById('repType').value,
+                topic: document.getElementById('repTopic').value,
+                instructor: document.getElementById('repInstructor').value,
+                students: document.getElementById('repStudents').value,
+                result: resultValue,
+                spreadsheetId: SPREADSHEET_ID
+            };
+
+            if (SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                    msg.innerHTML = '<span class="text-green-400"><i class="fas fa-check-circle"></i> Отчет добавлен (Демо)</span>';
+                    e.target.reset();
+                    updateTopics();
+                    showToast("Отчет успешно отправлен", "success");
+                }, 1500);
+                return;
+            }
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerText = originalText;
+                if(data.success) {
+                    msg.innerHTML = '<span class="text-green-400"><i class="fas fa-check-circle"></i> Отчет добавлен!</span>';
+                    e.target.reset();
+                    updateTopics();
+                    showToast("Отчет успешно отправлен", "success");
+                } else {
+                    msg.innerHTML = '<span class="text-red-400"><i class="fas fa-times-circle"></i> Ошибка сохранения</span>';
+                    showToast("Ошибка сохранения", "error");
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerText = originalText;
+                msg.innerHTML = '<span class="text-red-400"><i class="fas fa-times-circle"></i> Ошибка сети</span>';
+                showToast("Нет соединения", "error");
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTopics();
+        });
+    </script>
+</body>
+</html>
+
