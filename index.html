@@ -149,7 +149,6 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* Staff Card Styles */
         .staff-card-inner {
             background: linear-gradient(145deg, #1e293b, #0f172a);
             border: 1px solid rgba(59, 130, 246, 0.2);
@@ -249,7 +248,6 @@
             width: 100%;
         }
 
-        /* Validation Styles */
         .input-valid {
             border-color: #10b981 !important;
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
@@ -267,30 +265,13 @@
             font-size: 18px;
             transition: all 0.3s ease;
         }
-        .validation-icon.valid {
-            color: #10b981;
-            opacity: 1;
-        }
-        .validation-icon.invalid {
-            color: #ef4444;
-            opacity: 1;
-        }
-        .validation-icon.hidden {
-            opacity: 0;
-        }
-        .validation-message {
-            font-size: 12px;
-            margin-top: 4px;
-            transition: all 0.3s ease;
-        }
-        .validation-message.valid {
-            color: #10b981;
-        }
-        .validation-message.invalid {
-            color: #ef4444;
-        }
+        .validation-icon.valid { color: #10b981; opacity: 1; }
+        .validation-icon.invalid { color: #ef4444; opacity: 1; }
+        .validation-icon.hidden { opacity: 0; }
+        .validation-message { font-size: 12px; margin-top: 4px; transition: all 0.3s ease; }
+        .validation-message.valid { color: #10b981; }
+        .validation-message.invalid { color: #ef4444; }
 
-        /* Live Status Badge */
         .live-status {
             display: inline-flex;
             align-items: center;
@@ -313,15 +294,12 @@
             background: rgba(239, 68, 68, 0.1);
             border-color: rgba(239, 68, 68, 0.3);
         }
-        .live-status.error .live-status-dot {
-            background: #ef4444;
-        }
+        .live-status.error .live-status-dot { background: #ef4444; }
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.5; transform: scale(1.2); }
         }
 
-        /* Auto-refresh indicator */
         .refresh-indicator {
             position: fixed;
             top: 90px;
@@ -341,58 +319,13 @@
             transform: translateY(-10px);
             transition: all 0.3s ease;
         }
-        .refresh-indicator.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .refresh-indicator i {
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        .refresh-indicator.show { opacity: 1; transform: translateY(0); }
+        .refresh-indicator i { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* Staff Section Header */
         .staff-section-header {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(239, 68, 68, 0.1));
             border: 1px solid rgba(59, 130, 246, 0.3);
-        }
-
-        /* Hashtag Styles */
-        .hashtag-item {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            transition: all 0.3s ease;
-        }
-        .hashtag-item:hover {
-            background: rgba(59, 130, 246, 0.2);
-            border-color: rgba(59, 130, 246, 0.6);
-            transform: translateY(-2px);
-        }
-        .hashtag-item.training {
-            background: rgba(16, 185, 129, 0.1);
-            border-color: rgba(16, 185, 129, 0.3);
-        }
-        .hashtag-item.training:hover {
-            background: rgba(16, 185, 129, 0.2);
-            border-color: rgba(16, 185, 129, 0.6);
-        }
-        .hashtag-item.exam {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.3);
-        }
-        .hashtag-item.exam:hover {
-            background: rgba(239, 68, 68, 0.2);
-            border-color: rgba(239, 68, 68, 0.6);
-        }
-        .hashtag-item.lecture {
-            background: rgba(251, 191, 36, 0.1);
-            border-color: rgba(251, 191, 36, 0.3);
-        }
-        .hashtag-item.lecture:hover {
-            background: rgba(251, 191, 36, 0.2);
-            border-color: rgba(251, 191, 36, 0.6);
         }
     </style>
 </head>
@@ -575,13 +508,7 @@
             </div>
             
             <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                <div class="col-span-1 md:col-span-3 flex flex-col items-center justify-center py-12">
-                    <div class="relative w-20 h-20 mb-6">
-                        <div class="absolute top-0 left-0 w-full h-full border-4 border-police-800 rounded-full"></div>
-                        <div class="absolute top-0 left-0 w-full h-full border-4 border-t-police-accent border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-                    </div>
-                    <p class="text-gray-400 text-lg animate-pulse">Загрузка актуального расписания...</p>
-                </div>
+                <!-- Always shows 3 slots even if table is empty -->
             </div>
 
             <div class="glass-panel p-8 md:p-10 rounded-3xl shadow-2xl max-w-4xl mx-auto border-t border-police-accent/30">
@@ -766,51 +693,10 @@
                 </div>
 
                 <div class="space-y-6">
-                    <!-- All Hashtags -->
-                    <div class="glass-panel p-6 rounded-2xl shadow-xl border-t border-blue-500/30">
-                        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                            <i class="fas fa-hashtag text-police-accent"></i> Все хэштеги для VK
-                        </h3>
-                        <div class="space-y-4">
-                            <!-- Training -->
-                            <div>
-                                <h4 class="text-xs font-bold text-green-400 uppercase mb-2">Тренировки</h4>
-                                <div class="flex flex-wrap gap-2">
-                                    <span class="hashtag-item training px-3 py-1.5 rounded-lg text-xs font-mono text-green-300">#нл Ivan_Ivanov</span>
-                                    <span class="hashtag-item training px-3 py-1.5 rounded-lg text-xs font-mono text-green-300">#бэ Ivan_Ivanov</span>
-                                    <span class="hashtag-item training px-3 py-1.5 rounded-lg text-xs font-mono text-green-300">#строй</span>
-                                </div>
-                            </div>
-                            <!-- Lectures -->
-                            <div>
-                                <h4 class="text-xs font-bold text-yellow-400 uppercase mb-2">Лекции</h4>
-                                <div class="flex flex-wrap gap-2">
-                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#УК Ivan_Ivanov</span>
-                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#КоАП Ivan_Ivanov</span>
-                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#ФЗоП Ivan_Ivanov</span>
-                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#ФЗоО Ivan_Ivanov</span>
-                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#Конституция Ivan_Ivanov</span>
-                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#ПДД Ivan_Ivanov</span>
-                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#Субординация Ivan_Ivanov</span>
-                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#Рация Ivan_Ivanov</span>
-                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#Задержание Ivan_Ivanov</span>
-                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#ПерваяПомощь Ivan_Ivanov</span>
-                                </div>
-                            </div>
-                            <!-- Exams -->
-                            <div>
-                                <h4 class="text-xs font-bold text-red-400 uppercase mb-2">Экзамены</h4>
-                                <div class="flex flex-wrap gap-2">
-                                    <span class="hashtag-item exam px-3 py-1.5 rounded-lg text-xs font-mono text-red-300">#пт Ivan_Ivanov</span>
-                                    <span class="hashtag-item exam px-3 py-1.5 rounded-lg text-xs font-mono text-red-300">#па Ivan_Ivanov</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                    <!-- Topics List Only -->
                     <div class="glass-panel p-6 rounded-2xl shadow-xl border-t border-purple-500/30">
-                        <h3 class="text-lg font-bold text-white mb-3">Список тем</h3>
-                        <div class="text-xs text-gray-400 space-y-3 max-h-64 overflow-y-auto pr-2">
+                        <h3 class="text-lg font-bold text-white mb-3"><i class="fas fa-list mr-2 text-police-accent"></i>Список тем</h3>
+                        <div class="text-xs text-gray-400 space-y-3 max-h-96 overflow-y-auto pr-2">
                             <div>
                                 <span class="font-bold text-police-accent block mb-1">Тренировки:</span>
                                 <span class="opacity-70">Оцепление, Задержание, Строевая, Физподготовка, ДТП, Первая помощь.</span>
@@ -866,12 +752,12 @@
                 <p class="text-gray-400 text-lg">Загрузка данных о командном составе...</p>
             </div>
 
-            <!-- Error State (hidden by default) -->
+            <!-- Error State -->
             <div id="staffError" class="hidden text-center py-12">
                 <div class="inline-block p-4 rounded-full bg-red-900/30 mb-4">
                     <i class="fas fa-exclamation-triangle text-4xl text-red-500"></i>
                 </div>
-                <p class="text-red-300 text-lg mb-4">Ошибка загрузки списка сотрудников</p>
+                <p class="text-red-300 text-lg mb-4" id="staffErrorMessage">Ошибка загрузки списка сотрудников</p>
                 <button onclick="loadStaff()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl transition">
                     <i class="fas fa-redo mr-2"></i>Повторить попытку
                 </button>
@@ -879,7 +765,6 @@
 
             <!-- Staff Grid -->
             <div id="staffContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
-                <!-- Staff cards will be injected here -->
             </div>
 
             <!-- Info Box -->
@@ -889,7 +774,7 @@
                     Информация для командного состава
                 </h4>
                 <p class="text-gray-400 text-sm mb-4">
-                    Для добавления или изменения информации о сотруднике, обратитесь к разработчику сайта или внесите данные в таблицу ЦППС.
+                    Для добавления или изменения информации о сотруднике, внесите данные в таблицу ЦППС (лист Staff).
                 </p>
                 <div class="bg-police-900/50 p-4 rounded-xl border border-police-700">
                     <p class="text-xs text-gray-500">
@@ -962,11 +847,10 @@
     <div id="toast" class="toast">Message here</div>
 
     <script>
-        // КОНФИГУРАЦИЯ - ОБНОВЛЁННЫЙ URL
+        // КОНФИГУРАЦИЯ
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQIJiHjmQCNV6gMUcioIa9V8HBQpgak90vaIhhHs6HJr3ozHwX54uQsyKx_2wyOxtS7g/exec';
         const SPREADSHEET_ID = '14woBSDMK9W6QWmhn7kfr_BBRtFN5la9yVVv-XkPZXJM';
         
-        const NICK_PATTERN = /^[A-Z][a-z]+_[A-Z][a-z]+$/;
         const NICK_PATTERN_STRICT = /^[A-Za-z]+_[A-Za-z]+$/;
         
         const topics = {
@@ -980,8 +864,7 @@
         let autoRefreshInterval = null;
 
         function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
+            document.getElementById('mobile-menu').classList.toggle('hidden');
         }
 
         function switchTab(tabId) {
@@ -1041,25 +924,13 @@
         // ==================== VALIDATION ====================
         
         function validateNickname(nick) {
-            if (!nick || nick.trim() === '') {
-                return { valid: false, message: 'Введите никнейм' };
-            }
-            if (/[а-яА-ЯЁё]/.test(nick)) {
-                return { valid: false, message: 'Ник должен быть на латинице' };
-            }
-            if (!nick.includes('_')) {
-                return { valid: false, message: 'Ник должен содержать подчёркивание (Ivan_Ivanov)' };
-            }
+            if (!nick || nick.trim() === '') return { valid: false, message: 'Введите никнейм' };
+            if (/[а-яА-ЯЁё]/.test(nick)) return { valid: false, message: 'Ник должен быть на латинице' };
+            if (!nick.includes('_')) return { valid: false, message: 'Ник должен содержать подчёркивание (Ivan_Ivanov)' };
             const parts = nick.split('_');
-            if (parts.length !== 2) {
-                return { valid: false, message: 'Формат: Имя_Фамилия (одно подчёркивание)' };
-            }
-            if (parts[0].length < 2 || parts[1].length < 2) {
-                return { valid: false, message: 'Имя и фамилия должны быть не менее 2 букв' };
-            }
-            if (!/^[A-Za-z]+$/.test(parts[0]) || !/^[A-Za-z]+$/.test(parts[1])) {
-                return { valid: false, message: 'Ник должен содержать только буквы' };
-            }
+            if (parts.length !== 2) return { valid: false, message: 'Формат: Имя_Фамилия (одно подчёркивание)' };
+            if (parts[0].length < 2 || parts[1].length < 2) return { valid: false, message: 'Имя и фамилия должны быть не менее 2 букв' };
+            if (!/^[A-Za-z]+$/.test(parts[0]) || !/^[A-Za-z]+$/.test(parts[1])) return { valid: false, message: 'Ник должен содержать только буквы' };
             return { valid: true, message: 'Ник корректен' };
         }
 
@@ -1114,10 +985,7 @@
 
         document.getElementById('bookNick').addEventListener('blur', function(e) {
             const value = e.target.value.trim();
-            if (value === '') {
-                clearValidationUI();
-                return;
-            }
+            if (value === '') { clearValidationUI(); return; }
             const result = validateNickname(value);
             updateValidationUI(result.valid, result.message);
             if (!result.valid) {
@@ -1130,11 +998,8 @@
         
         function showRefreshIndicator(show) {
             const indicator = document.getElementById('refreshIndicator');
-            if (show) {
-                indicator.classList.add('show');
-            } else {
-                indicator.classList.remove('show');
-            }
+            if (show) indicator.classList.add('show');
+            else indicator.classList.remove('show');
         }
 
         function updateConnectionStatus(online) {
@@ -1150,8 +1015,7 @@
 
         function updateLastUpdateTime() {
             const now = new Date();
-            const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            document.getElementById('lastUpdate').textContent = timeStr;
+            document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             lastFetchTime = now;
         }
 
@@ -1185,68 +1049,7 @@
             }
         }
 
-        async function loadSchedule(showIndicator = true) {
-            const container = document.getElementById('scheduleGrid');
-            
-            if (showIndicator) {
-                showRefreshIndicator(true);
-            }
-            
-            try {
-                const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 10000);
-                
-                const response = await fetch(`${SCRIPT_URL}?action=getSchedule&spreadsheetId=${SPREADSHEET_ID}`, { 
-                    signal: controller.signal,
-                    cache: 'no-cache'
-                });
-                clearTimeout(timeout);
-                
-                if (!response.ok) throw new Error('Network response was not ok');
-                
-                const data = await response.json();
-                if(data.error) throw new Error(data.error);
-                
-                scheduleData = data.schedule || [];
-                renderSchedule(scheduleData);
-                updateScheduleStats(scheduleData);
-                updateLastUpdateTime();
-                updateConnectionStatus(true);
-                
-            } catch (error) {
-                console.error('Error loading schedule:', error);
-                updateConnectionStatus(false);
-                
-                if (error.name === 'AbortError') {
-                    container.innerHTML = `
-                        <div class="col-span-3 bg-yellow-900/20 border border-yellow-500/50 p-8 rounded-2xl text-center">
-                            <i class="fas fa-clock text-yellow-500 text-4xl mb-4"></i>
-                            <p class="text-yellow-200 font-bold text-lg">Превышено время ожидания</p>
-                            <p class="text-yellow-300 text-sm mt-2">Попробуйте обновить страницу</p>
-                            <button onclick="loadSchedule()" class="mt-4 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded-lg transition">
-                                <i class="fas fa-redo mr-2"></i>Повторить
-                            </button>
-                        </div>
-                    `;
-                    showToast("Таймаут соединения", "error");
-                } else {
-                    container.innerHTML = `
-                        <div class="col-span-3 bg-red-900/20 border border-red-500/50 p-8 rounded-2xl text-center">
-                            <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-4 animate-bounce"></i>
-                            <p class="text-red-200 font-bold text-lg">Ошибка соединения с таблицей</p>
-                            <p class="text-red-300 text-sm mt-2">Проверьте подключение к интернету</p>
-                            <button onclick="loadSchedule()" class="mt-4 bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition">
-                                <i class="fas fa-redo mr-2"></i>Повторить
-                            </button>
-                        </div>
-                    `;
-                    showToast("Нет соединения с таблицей", "error");
-                }
-            } finally {
-                showRefreshIndicator(false);
-            }
-        }
-
+        // Always show 3 slots even if table is empty
         function renderSchedule(data) {
             const container = document.getElementById('scheduleGrid');
             container.innerHTML = '';
@@ -1254,6 +1057,7 @@
             const timeSlots = ['10:00', '14:00', '18:00'];
             
             timeSlots.forEach((time, index) => {
+                // Find slot in data or create default free slot
                 const slot = data.find(s => s.time === time) || { time, status: 'free', user: '', desc: '' };
                 const isFree = slot.status === 'free';
                 
@@ -1274,7 +1078,7 @@
                     content += `
                         <div class="bg-red-950/30 p-4 rounded-xl border border-red-900/30 text-sm text-gray-300 backdrop-blur-sm">
                             <div class="flex items-center justify-center gap-2 mb-3 text-red-400 font-bold text-lg">
-                                <i class="fas fa-user-shield"></i> ${slot.user}
+                                <i class="fas fa-user-shield"></i> ${slot.user || 'Не указано'}
                             </div>
                             <div class="bg-red-900/40 p-3 rounded-lg border border-red-800/30">
                                 <div class="text-xs text-gray-400 uppercase mb-1">
@@ -1305,11 +1109,52 @@
             });
         }
 
+        async function loadSchedule(showIndicator = true) {
+            if (showIndicator) showRefreshIndicator(true);
+            
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 10000);
+                
+                const response = await fetch(`${SCRIPT_URL}?action=getSchedule&spreadsheetId=${SPREADSHEET_ID}`, { 
+                    signal: controller.signal,
+                    cache: 'no-cache'
+                });
+                clearTimeout(timeout);
+                
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const data = await response.json();
+                if(data.error) throw new Error(data.error);
+                
+                scheduleData = data.schedule || [];
+                renderSchedule(scheduleData);
+                updateScheduleStats(scheduleData);
+                updateLastUpdateTime();
+                updateConnectionStatus(true);
+                
+            } catch (error) {
+                console.error('Error loading schedule:', error);
+                updateConnectionStatus(false);
+                
+                // Show default free slots even on error
+                const defaultData = [
+                    { time: '10:00', status: 'free', user: '', desc: '' },
+                    { time: '14:00', status: 'free', user: '', desc: '' },
+                    { time: '18:00', status: 'free', user: '', desc: '' }
+                ];
+                renderSchedule(defaultData);
+                updateScheduleStats(defaultData);
+                
+                showToast("Используются данные по умолчанию", "warning");
+            } finally {
+                showRefreshIndicator(false);
+            }
+        }
+
         function startAutoRefresh() {
             if (autoRefreshInterval) return;
-            autoRefreshInterval = setInterval(() => {
-                loadSchedule(false);
-            }, 30000);
+            autoRefreshInterval = setInterval(() => loadSchedule(false), 30000);
         }
 
         function stopAutoRefresh() {
@@ -1319,12 +1164,13 @@
             }
         }
 
-        // ==================== STAFF / COMMAND SECTION ====================
+        // ==================== STAFF ====================
         
         async function loadStaff() {
             const loadingEl = document.getElementById('staffLoading');
             const errorEl = document.getElementById('staffError');
             const container = document.getElementById('staffContainer');
+            const errorMsg = document.getElementById('staffErrorMessage');
             
             loadingEl.classList.remove('hidden');
             errorEl.classList.add('hidden');
@@ -1349,16 +1195,21 @@
                 if (!response.ok) throw new Error('Network response was not ok');
                 
                 const data = await response.json();
+                console.log('Staff data received:', data);
+                
                 if(data.error) throw new Error(data.error);
                 
                 loadingEl.classList.add('hidden');
                 container.classList.remove('hidden');
                 renderStaffStructure(requiredStructure, data.staff || []);
+                updateConnectionStatus(true);
                 
             } catch (error) {
                 console.error('Error loading staff:', error);
                 loadingEl.classList.add('hidden');
                 errorEl.classList.remove('hidden');
+                errorMsg.textContent = 'Ошибка: ' + error.message;
+                updateConnectionStatus(false);
                 showToast("Ошибка загрузки состава", "error");
             }
         }
@@ -1447,10 +1298,7 @@
                 spreadsheetId: SPREADSHEET_ID
             };
 
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(data)
-            })
+            fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) })
             .then(res => res.json())
             .then(data => {
                 btn.disabled = false;
@@ -1500,10 +1348,7 @@
                 spreadsheetId: SPREADSHEET_ID
             };
 
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(data)
-            })
+            fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) })
             .then(res => res.json())
             .then(data => {
                 btn.disabled = false;
@@ -1526,9 +1371,12 @@
             });
         });
 
+        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             updateTopics();
             document.getElementById('submitBtn').disabled = true;
+            // Load schedule on page load
+            loadSchedule();
         });
 
         window.addEventListener('beforeunload', () => {
