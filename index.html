@@ -358,6 +358,42 @@
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(239, 68, 68, 0.1));
             border: 1px solid rgba(59, 130, 246, 0.3);
         }
+
+        /* Hashtag Styles */
+        .hashtag-item {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        .hashtag-item:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.6);
+            transform: translateY(-2px);
+        }
+        .hashtag-item.training {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        .hashtag-item.training:hover {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.6);
+        }
+        .hashtag-item.exam {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        .hashtag-item.exam:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.6);
+        }
+        .hashtag-item.lecture {
+            background: rgba(251, 191, 36, 0.1);
+            border-color: rgba(251, 191, 36, 0.3);
+        }
+        .hashtag-item.lecture:hover {
+            background: rgba(251, 191, 36, 0.2);
+            border-color: rgba(251, 191, 36, 0.6);
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen selection:bg-police-accent selection:text-white">
@@ -437,7 +473,7 @@
                             </p>
                         </div>
                         <div class="bg-gradient-to-r from-police-800 to-police-900 p-6 rounded-xl border-l-4 border-police-accent shadow-lg">
-                            <h3 class="font-bold text-white mb-3 text-lg"><i class="fas fa-list-check mr-2 text-police-accent"></i>Алгоритм работы инструктора:</h3>
+                            <h3 class="font-bold text-white mb-3 text-lg"><i class="fas fa-clipboard-list mr-2 text-police-accent"></i>Принцип работы инструктором:</h3>
                             <ol class="list-decimal list-inside space-y-2 text-gray-400 marker:text-police-accent">
                                 <li>Проверить наличие курсанта в таблице начальных лекций.</li>
                                 <li>Забронировать время для строя (10:00 / 14:00 / 18:00).</li>
@@ -693,7 +729,9 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-bold text-gray-400 mb-2">Курсанты (Ники через запятую)</label>
+                            <label class="block text-sm font-bold text-gray-400 mb-2">
+                                <i class="fas fa-users mr-1"></i>Кому проводили (Ники через запятую)
+                            </label>
                             <textarea id="repStudents" placeholder="Ivan_Ivanov, Petr_Petrov" class="w-full bg-police-900/50 border border-police-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition h-24 resize-none" required></textarea>
                             <p class="text-xs text-gray-500 mt-2 flex items-center gap-1"><i class="fas fa-info-circle"></i> Разделяйте ники запятой для корректного внесения.</p>
                         </div>
@@ -728,18 +766,45 @@
                 </div>
 
                 <div class="space-y-6">
+                    <!-- All Hashtags -->
                     <div class="glass-panel p-6 rounded-2xl shadow-xl border-t border-blue-500/30">
                         <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                            <i class="fas fa-hashtag text-police-accent"></i> Хэштеги для VK
+                            <i class="fas fa-hashtag text-police-accent"></i> Все хэштеги для VK
                         </h3>
-                        <div class="grid grid-cols-2 gap-3 text-xs font-mono text-blue-300 bg-black/20 p-4 rounded-xl border border-white/5">
-                            <div class="border-b border-gray-700 pb-2 hover:text-white transition cursor-default">#нл Ник</div>
-                            <div class="border-b border-gray-700 pb-2 hover:text-white transition cursor-default">#бэ Ник</div>
-                            <div class="border-b border-gray-700 pb-2 hover:text-white transition cursor-default">#УК Ник</div>
-                            <div class="border-b border-gray-700 pb-2 hover:text-white transition cursor-default">#КоАП Ник</div>
-                            <div class="border-b border-gray-700 pb-2 hover:text-white transition cursor-default">#ФЗоП Ник</div>
-                            <div class="border-b border-gray-700 pb-2 hover:text-white transition cursor-default">#пт Ник</div>
-                            <div class="col-span-2 text-center pt-2 text-gray-500 hover:text-white transition cursor-default">#строй</div>
+                        <div class="space-y-4">
+                            <!-- Training -->
+                            <div>
+                                <h4 class="text-xs font-bold text-green-400 uppercase mb-2">Тренировки</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="hashtag-item training px-3 py-1.5 rounded-lg text-xs font-mono text-green-300">#нл Ivan_Ivanov</span>
+                                    <span class="hashtag-item training px-3 py-1.5 rounded-lg text-xs font-mono text-green-300">#бэ Ivan_Ivanov</span>
+                                    <span class="hashtag-item training px-3 py-1.5 rounded-lg text-xs font-mono text-green-300">#строй</span>
+                                </div>
+                            </div>
+                            <!-- Lectures -->
+                            <div>
+                                <h4 class="text-xs font-bold text-yellow-400 uppercase mb-2">Лекции</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#УК Ivan_Ivanov</span>
+                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#КоАП Ivan_Ivanov</span>
+                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#ФЗоП Ivan_Ivanov</span>
+                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#ФЗоО Ivan_Ivanov</span>
+                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#Конституция Ivan_Ivanov</span>
+                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#ПДД Ivan_Ivanov</span>
+                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#Субординация Ivan_Ivanov</span>
+                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#Рация Ivan_Ivanov</span>
+                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#Задержание Ivan_Ivanov</span>
+                                    <span class="hashtag-item lecture px-3 py-1.5 rounded-lg text-xs font-mono text-yellow-300">#ПерваяПомощь Ivan_Ivanov</span>
+                                </div>
+                            </div>
+                            <!-- Exams -->
+                            <div>
+                                <h4 class="text-xs font-bold text-red-400 uppercase mb-2">Экзамены</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="hashtag-item exam px-3 py-1.5 rounded-lg text-xs font-mono text-red-300">#пт Ivan_Ivanov</span>
+                                    <span class="hashtag-item exam px-3 py-1.5 rounded-lg text-xs font-mono text-red-300">#па Ivan_Ivanov</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1208,10 +1273,17 @@
                 if (!isFree) {
                     content += `
                         <div class="bg-red-950/30 p-4 rounded-xl border border-red-900/30 text-sm text-gray-300 backdrop-blur-sm">
-                            <div class="flex items-center justify-center gap-2 mb-2 text-red-400 font-bold">
+                            <div class="flex items-center justify-center gap-2 mb-3 text-red-400 font-bold text-lg">
                                 <i class="fas fa-user-shield"></i> ${slot.user}
                             </div>
-                            <div class="text-xs text-gray-500 italic border-t border-red-900/20 pt-2">${slot.desc || 'Без описания'}</div>
+                            <div class="bg-red-900/40 p-3 rounded-lg border border-red-800/30">
+                                <div class="text-xs text-gray-400 uppercase mb-1">
+                                    <i class="fas fa-book-open mr-1"></i>Мероприятие
+                                </div>
+                                <div class="text-white font-medium">
+                                    ${slot.desc || 'Без описания'}
+                                </div>
+                            </div>
                         </div>
                     `;
                 } else {
@@ -1254,7 +1326,6 @@
             const errorEl = document.getElementById('staffError');
             const container = document.getElementById('staffContainer');
             
-            // Show loading, hide others
             loadingEl.classList.remove('hidden');
             errorEl.classList.add('hidden');
             container.classList.add('hidden');
@@ -1455,7 +1526,6 @@
             });
         });
 
-        // Инициализация
         document.addEventListener('DOMContentLoaded', () => {
             updateTopics();
             document.getElementById('submitBtn').disabled = true;
